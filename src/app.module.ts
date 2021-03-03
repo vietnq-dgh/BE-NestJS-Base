@@ -6,9 +6,8 @@ import { config } from './orm.config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommandModule } from 'nestjs-command';
-import { OauthModule } from './oauth/oauth.module';
 @Module({
-  imports: [TypeOrmModule.forRoot(config) , UserModule, AuthModule, CommandModule, OauthModule,],
+  imports: [TypeOrmModule.forRoot(config) , UserModule, AuthModule, CommandModule,],
   controllers: [AppController],
   providers: [AppService,],
 })
