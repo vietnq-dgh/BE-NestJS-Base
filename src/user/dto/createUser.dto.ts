@@ -1,24 +1,43 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEmail, IsString } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsString, IsEnum, IsBoolean } from 'class-validator';
+import { rolerUser } from 'src/common/constant';
 
 export class CreateUserDto {
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  firstName: string;
+  displayName: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  lastName: string;
+  username: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  password: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  confirmPassword: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: "Quyền ADMIN hoặc CLIENT",
+    default: "CLIENT"
+  })
+  @IsEnum(rolerUser)
   @IsNotEmpty()
-  password: string;
+  role: rolerUser;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsNotEmpty()
+  isActive: boolean;
 }

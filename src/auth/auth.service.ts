@@ -22,6 +22,7 @@ export class AuthService {
         };
     
         try {
+          if(userDto.password == userDto.confirmPassword)
           await this.userService.create(userDto);
         } catch (err) {
           status = {
@@ -33,10 +34,10 @@ export class AuthService {
         return status;
       }
 
-      private _createToken({ email }: UserDto): any {
+      private _createToken({ username }: UserDto): any {
         const expiresIn = process.env.EXPIRESIN;
     
-        const user: JwtPayload = { email };
+        const user: JwtPayload = { username };
         const accessToken = this.jwtService.sign(user);
         return {
           expiresIn,
