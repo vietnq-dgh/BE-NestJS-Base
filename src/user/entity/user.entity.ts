@@ -1,21 +1,26 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
-import { Command } from "nestjs-command";
+import { rolerUser } from "src/common/constant";
+import { nice_name } from "./niceName.entity";
 
 @Entity()
 export class UserEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({
-        type: "varchar",
-    })
-    firstName: string;
+    @Column({type:"varchar"})
+    displayName: string;
 
     @Column({
         type: "varchar",
     })
-    lastName: string;
+    username: string;
+
+    @Column({
+        type: "varchar",
+        nullable: false
+    })
+    password: string;
 
     @Column({
         type: "varchar",
@@ -24,11 +29,20 @@ export class UserEntity {
     })  
     email: string;
 
-    @Column({
-        type: "varchar",
-        nullable: false
-    })
-    password: string;
+    @Column({default:true})
+    isActive:boolean;
+
+    @Column('enum',{enum: rolerUser})
+    role: rolerUser;
+
+    @CreateDateColumn()
+    createAt?:Date;
+
+    @UpdateDateColumn()
+    updateAt?:Date
+
+    @ManyToOne(() => nice_name, nice_name => nice_name.name)
+    niceName: nice_name;
 
     @BeforeInsert()
     async hashPassword(){

@@ -12,12 +12,12 @@ import { UserModule } from './user/user.module';
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
-              type: configService.get('DB_SERVER_TYPE', 'postgres'),
+              type: configService.get('DB_SERVER_TYPE', 'mysql'),
               host: configService.get<string>('DB_SERVER_HOST', 'localhost'),
-              port: configService.get<number>('DB_SERVER_PORT', 5432),
-              username: configService.get('DB_SERVER_USERNAME', 'postgres'),
-              password: configService.get('DB_SERVER_PASSWORD', '123456789'),
-              database: configService.get('DB_SERVER_NAME', 'user-demo'),
+              port: configService.get<number>('DB_SERVER_PORT', 3306),
+              username: configService.get('DB_SERVER_USERNAME', 'root'),
+              password: configService.get('DB_SERVER_PASSWORD', 'phuocidol@113Aa'),
+              database: configService.get('DB_SERVER_NAME', 'DB_TEST_03'),
               entities: [
                 UserEntity,
                 ],

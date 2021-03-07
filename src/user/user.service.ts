@@ -6,6 +6,7 @@ import { UserDto } from './dto/userDto.dto';
 import { UserEntity } from './entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/createUser.dto';
+import { HttpExceptionFilter } from 'src/common/fillters/http-exception.fillter';
 
 @Injectable()
 export class UserService {
@@ -18,8 +19,8 @@ export class UserService {
         return await this.userRepo.findOne(user);
     }
 
-    async findByLogin({ email, password}: LoginUserDto){
-        const user = await this.userRepo.findOne({where:{email}});
+    async findByLogin({ username, password}: LoginUserDto){
+        const user = await this.userRepo.findOne({where:{username}});
         if(!user){
             throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
         }
@@ -34,25 +35,33 @@ export class UserService {
         return user
     }
 
-    async findByPayload({email}:any){
+    async findByPayload({username}:any){
         return await this.findOne({
-            where: { email }
+            where: { username }
         });
     }
 
     async create(userDto: CreateUserDto){    
-        const { firstName, lastName, email, password } = userDto;
+        const { displayName, username, email, password, confirmPassword, isActive, role} = userDto;
         
         // check if the user exists in the db    
         const userInDb = await this.userRepo.findOne({ 
-            where: { email } 
+            where: { username } 
+        });
+
+        const emailInDb = await this.userRepo.findOne({
+            where: { email }
         });
 
         if (userInDb) {
-            throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);    
+            return { success: false, message: 'User name already exists'};   
+        }
+
+        if (emailInDb){
+            return { success: false, message: 'Email already exists'};
         }
         
-        const user: UserEntity = await this.userRepo.create({ firstName, lastName, password, email, });
+        const user: UserEntity = await this.userRepo.create({  displayName, username,  password, email, isActive, role});
         return await this.userRepo.save(user);
     }
 }

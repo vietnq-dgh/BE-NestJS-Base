@@ -6,11 +6,11 @@ export class UserDto {
 
     @IsString()
     @IsNotEmpty()
-    firstName: string;
+    displayName: string;
 
     @IsString()
     @IsNotEmpty()
-    lastName: string;
+    username: string;
 
     @IsNotEmpty()
     @IsEmail()
