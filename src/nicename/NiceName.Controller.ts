@@ -4,21 +4,29 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Connection } from "typeorm";
 import { NiceNameService } from "./NiceName.Service";
 import { CreateDto, UpdateDto } from "./NiceName.Dto";
-
-const libs = require('../common/PublicModules');
+import PublicModules from "../common/PublicModules";
+import { ParamsForService } from "src/common/Classess";
 
 @ApiTags('NICE NAME')
 @Controller('nice_name')
 export class NiceNameController{
-    constructor(private readonly conn: Connection) {}
-    nNameService = new NiceNameService(this.conn);
+    nNameService = null;
+    libs = null;
+
+    constructor(private readonly conn: Connection) {
+        this.libs = new PublicModules();
+        const params = new ParamsForService()
+        params.conn = this.conn;
+        params.libs = this.libs;
+        this.nNameService = new NiceNameService(params);
+    }
 
     @Get('nice_name')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     async gets(@Req() req: any): Promise<any> {
         // is admin?
-        const isClient = libs.fun_isAuthClient(req);
+        const isClient = this.libs.fun_isAuthClient(req);
         if (isClient){
             return isClient;
         }
@@ -33,7 +41,7 @@ export class NiceNameController{
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     async get(@Req() req: any, @Param('id') id: string):Promise<any>{
-        const isClient = libs.fun_isAuthClient(req);
+        const isClient = this.libs.fun_isAuthClient(req);
         if (isClient){
             return isClient;
         }
@@ -48,7 +56,7 @@ export class NiceNameController{
     @UseGuards(AuthGuard())
     async add(@Req() req: any, @Body() body: CreateDto):Promise<any>{
         // is Admin?
-        const isClient = libs.fun_isAuthClient(req);
+        const isClient = this.libs.fun_isAuthClient(req);
         if (isClient){
             return isClient;
         }
@@ -63,7 +71,7 @@ export class NiceNameController{
     @UseGuards(AuthGuard())
     async put(@Req() req: any, @Param('id') id: string, @Body() body: UpdateDto): Promise<any>{
         var task = null;
-        const isClient = libs.fun_isAuthClient(req);
+        const isClient = this.libs.fun_isAuthClient(req);
         if (isClient){
             return isClient;
         }
@@ -78,7 +86,7 @@ export class NiceNameController{
     @UseGuards(AuthGuard())
     async delete(@Req() req: any, @Param('id') id: string): Promise<any> {
         var task = null;
-        task = libs.fun_isAuthClient(req);
+        task = this.libs.fun_isAuthClient(req);
         if (task){
             return task;
         }

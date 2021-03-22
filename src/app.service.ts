@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { TaskRes } from './common/TaskRes';
+import { TaskRes } from './common/Classess';
 
 @Injectable()
 export class AppService {

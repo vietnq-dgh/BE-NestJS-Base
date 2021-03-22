@@ -1,31 +1,29 @@
 import { NiceName } from "src/common/entities/NiceName.entity";
-import { TaskRes } from "src/common/TaskRes";
-import { Connection, Repository } from "typeorm";
+import { ParamsForService, TaskRes } from "src/common/Classess";
+import { Repository } from "typeorm";
 import { CreateDto, UpdateDto } from "./NiceName.Dto";
 import { LEN_OF_FIELDS } from "../common/Enums";
 import { HttpStatus } from "@nestjs/common";
 import * as Dics from '../common/MyDictionary.json'
-
-const libs = require('../common/PublicModules');
+import PublicModules from "src/common/PublicModules";
 
 export class NiceNameService {
 
     // **************** DEFAULT ***************
     // Repository
     repo = null as Repository<NiceName>;
+    libs = null as PublicModules;
 
     // Get Connection
-    constructor(private readonly conn: Connection) {
-        this.repo = conn.getRepository(NiceName);
+    constructor(params: ParamsForService) {
+        this.repo = params.conn.getRepository(NiceName);
+        this.libs = params.libs;
     }
-
-    // Get Repository
-    nNameRepo = this.conn.getRepository(NiceName);
     // **************** DEFAULT ***************
     
     gets = async () => {
         const list =  await this.repo.find();
-        const task = libs.fun_makeResListSucc(list, null, null);
+        const task = this.libs.fun_makeResListSucc(list, null, null);
         return task;
     };
 
@@ -33,7 +31,7 @@ export class NiceNameService {
         let task = new TaskRes();
 
         // id to long
-        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        const isLong = this.libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
@@ -42,12 +40,12 @@ export class NiceNameService {
 
         // Not found
         if (!find){
-            task = libs.fun_makeResNotFound(find);
+            task = this.libs.fun_makeResNotFound(find);
             return task;
         }
 
         // found
-        task = libs.fun_makeResFoundSucc(find);
+        task = this.libs.fun_makeResFoundSucc(find);
         return task;
     };
 
@@ -55,13 +53,13 @@ export class NiceNameService {
         const task = new TaskRes();
 
         // name to long?
-        const isLong = libs.fun_isLengthToLong(dto.name, LEN_OF_FIELDS.LENGTH_LOW);
+        const isLong = this.libs.fun_isLengthToLong(dto.name, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
 
         // name exists db?
-        const find = await this.nNameRepo.findOne({where: {name: dto.name}});
+        const find = await this.repo.findOne({where: {name: dto.name}});
         if (find){
             task.statusCode = HttpStatus.FOUND;
             task.message = Dics.NAME_FOUND;
@@ -69,10 +67,10 @@ export class NiceNameService {
             return task;
         }
 
-        const newNName = this.nNameRepo.create();
+        const newNName = this.repo.create();
         newNName.name = dto.name;
-        const save = await this.nNameRepo.save(newNName);
-        const res = libs.fun_makeResCreateSucc(save);
+        const save = await this.repo.save(newNName);
+        const res = this.libs.fun_makeResCreateSucc(save);
         return res;
     };
 
@@ -80,7 +78,7 @@ export class NiceNameService {
         var task = null;
 
         // is long ?
-        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        const isLong = this.libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
@@ -88,7 +86,7 @@ export class NiceNameService {
         // find one if exists
         const find = await this.repo.findOne({where: {id: id}});
         if (!find){
-            const task = libs.fun_makeResNotFound(id);
+            const task = this.libs.fun_makeResNotFound(id);
             return task;
         }
 
@@ -96,14 +94,14 @@ export class NiceNameService {
         
         //save
         task = await this.repo.save(merge);
-        task = libs.fun_makeResUpdateSucc(task);
+        task = this.libs.fun_makeResUpdateSucc(task);
         return task;
     };
 
     delete = async (id: string) => {
         var task = null;
         // id long ?
-        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        task = this.libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (task){
             return task;
         }
@@ -111,13 +109,13 @@ export class NiceNameService {
         // find one if exists ?
         const find = await this.repo.findOne({where: {id: id}});
         if (!find){
-            task = libs.fun_makeResNotFound(id);
+            task = this.libs.fun_makeResNotFound(id);
             return task;
         }
 
         // delete
         task = await this.repo.delete({id: id});
-        task = libs.fun_makeResDeleteSucc(task);
+        task = this.libs.fun_makeResDeleteSucc(task);
         return task;
     }
 }
