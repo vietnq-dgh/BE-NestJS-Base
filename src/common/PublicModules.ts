@@ -23,7 +23,7 @@ export const fun_isLengthToLong = (str: string, len: number) => {
     if (str == null || str.length == 0 || str.length > len) {
         task.statusCode = HttpStatus.LENGTH_REQUIRED;
         task.message = Dics.LEN_TO_LONG;
-        task.bonus = 'Len: ' + str.length;
+        task.bonus = `Length: ${str.length} / ${len}`;
         return task;
     }
 

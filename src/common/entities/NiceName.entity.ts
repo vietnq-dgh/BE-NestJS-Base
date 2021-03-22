@@ -6,7 +6,7 @@ export class NiceName{
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({type: 'varchar', length: LEN_OF_FIELDS.NICE_NAME_NAME})
+    @Column({type: 'varchar', length: LEN_OF_FIELDS.LENGTH_LOW})
     name:string;
 
     @Column({type: "bool", default: false})
