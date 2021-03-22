@@ -24,7 +24,9 @@ export class NiceNameService {
     // **************** DEFAULT ***************
     
     gets = async () => {
-        return await this.repo.find();
+        const list =  await this.repo.find();
+        const task = libs.fun_makeResListSucc(list, null, null);
+        return task;
     };
 
     get = async (id: string) => {
@@ -70,7 +72,7 @@ export class NiceNameService {
         const newNName = this.nNameRepo.create();
         newNName.name = dto.name;
         const save = await this.nNameRepo.save(newNName);
-        const res = libs.fun_makeResSucc(save);
+        const res = libs.fun_makeResCreateSucc(save);
         return res;
     };
 

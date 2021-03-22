@@ -30,11 +30,11 @@ export const fun_isLengthToLong = (str: string, len: number) => {
     return null;
 }
 
-export const fun_makeResCreateSucc = (bonus: any) => {
+export const fun_makeResCreateSucc = (result: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.CREATED;
     task.message = Dics.CREATE_SUCC;
-    task.bonus = bonus;
+    task.result = result;
     return task;
 }
 
@@ -46,11 +46,11 @@ export const fun_makeResUpdateSucc = (bonus: any) => {
     return task;
 }
 
-export const fun_makeResFoundSucc = (bonus: any) => {
+export const fun_makeResFoundSucc = (result: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.OK;
     task.message = Dics.FOUND_OK;
-    task.bonus = bonus;
+    task.result = result;
     return task;
 }
 
@@ -66,6 +66,35 @@ export const fun_makeResDeleteSucc = (bonus: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.CREATED;
     task.message = Dics.DELETE_SUCC;
+    task.bonus = bonus;
+    return task;
+}
+
+export const fun_makeResListSucc = (list: Array<any>, total: number, bonus: any) => {
+    const task = new TaskRes();
+    task.statusCode = HttpStatus.OK;
+    task.message = Dics.FOUND_OK;
+    task.result = list;
+    if (total) {
+        task.total = total;
+    } else {
+        task.total = list.length;
+    }
+    if (bonus) {
+        task.bonus = bonus;
+    }
+
+    return task;
+};
+
+export const fun_makeResError = (bonus: any, mess: any) => {
+    const task = new TaskRes();
+    task.statusCode = HttpStatus.FAILED_DEPENDENCY;
+    if (mess) {
+        task.message = mess;
+    } else {
+        task.message = Dics.FAILED_DEPENDENCY;
+    }
     task.bonus = bonus;
     return task;
 }

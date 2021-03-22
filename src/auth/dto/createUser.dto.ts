@@ -18,26 +18,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // @IsNotEmpty()
-  // confirmPassword: string;
-
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  // @ApiProperty({
-  //   description: "Quyền ADMIN hoặc CLIENT",
-  //   default: "CLIENT"
-  // })
-  // @IsEnum(RolerUser)
-  // @IsNotEmpty()
-  // role: RolerUser;
-
-  // @ApiProperty()
-  // @IsBoolean()
-  // @IsNotEmpty()
-  // isActive: boolean;
 }

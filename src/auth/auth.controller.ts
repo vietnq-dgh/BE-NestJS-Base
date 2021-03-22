@@ -2,9 +2,9 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, 
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TaskRes } from 'src/common/TaskRes';
-import { CreateUserDto } from 'src/user/dto/createUser.dto';
-import { DeleteUser } from 'src/user/dto/DeleteUser';
-import { LoginUserDto } from 'src/user/dto/loginUserDto.dto';
+import { CreateUserDto } from 'src/auth/dto/createUser.dto';
+import { DeleteUser } from 'src/auth/dto/DeleteUser';
+import { LoginUserDto } from 'src/auth/dto/loginUserDto.dto';
 import { User } from 'src/common/entities/User.entity';
 import { getRepository } from 'typeorm';
 import { AuthService } from './auth.service';
@@ -32,7 +32,9 @@ export class AuthController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth()
     public async testAuth(@Req() req: any): Promise<JwtPayload> {
-        return req.user;
+        const res =  req.user;
+        const task = libs.fun_makeResFoundSucc(res);
+        return task;
     }
 
     @Get('user')
@@ -44,15 +46,16 @@ export class AuthController {
             return isClient;
         }
         const res = await this.userRepo.find();
+        const task = libs.fun_makeResListSucc(res, null, null);
 
-        return res;
+        return task;
     }
 
     @Get('user/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     async getUser(@Param('id') id: string, @Req() req: any):Promise<any>{
-        const task = new TaskRes();
+        var task = new TaskRes();
         if (!id){
             task.statusCode = HttpStatus.BAD_REQUEST;
             task.message = HttpStatus[HttpStatus.BAD_REQUEST];
@@ -72,19 +75,14 @@ export class AuthController {
             task.bonus = id;
             return task;
         }
-        return user;
+        task = libs.fun_makeResFoundSucc(user);
+        return task;
     }
 
     @Post('user')
-    // @ApiCreatedResponse({description: "The payment history has been successfully took."})
-    // @ApiForbiddenResponse({description: "Forbidden"})
     public async register(@Body() createUser: CreateUserDto): Promise<RegistrationStatus> {
-        const result: RegistrationStatus = await this.authService.register(
-            createUser
-        );
-        if (!result.success) {
-            throw new HttpException(result.message, HttpStatus.BAD_REQUEST);
-        }
+        var task = null;
+        const result = await this.authService.register(createUser);
 
         return result;
     }
@@ -145,23 +143,22 @@ export class AuthController {
         return task;
     }
 
-    @Delete('user')
+    @Delete('user/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    async deleteUser(@Req() req: any, @Body() body: DeleteUser): Promise<any> {
+    async deleteUser(@Req() req: any, @Param('id') id: string): Promise<any> {
         const isClient = libs.fun_isAuthClient(req);
         if (isClient){
             return isClient;
         }
-        const { userID } = body;
-        const user = await this.userRepo.findOne({ where: { id: userID } });
+        const user = await this.userRepo.findOne({ where: { id: id } });
         const task = new TaskRes();
         if (!user) {
             task.statusCode = HttpStatus.NOT_FOUND;
             task.message = HttpStatus[HttpStatus.NOT_FOUND]
             return task;
         }
-        const delRes = await this.userRepo.delete({ id: userID });
+        const delRes = await this.userRepo.delete({ id: id });
         task.statusCode = HttpStatus.OK;
         task.message = HttpStatus[HttpStatus.OK];
         task.bonus = delRes;
@@ -171,7 +168,7 @@ export class AuthController {
     @Put('user/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    async updateUser(@Body() body: CreateUserDto, @Req() req: any, @Param('id') id: number){
+    async updateUser(@Body() body: CreateUserDto, @Req() req: any, @Param('id') id: string){
         const task = new TaskRes();
         if (!id){
             task.statusCode = HttpStatus.BAD_REQUEST;
