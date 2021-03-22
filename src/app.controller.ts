@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { TaskRes } from './common/TaskRes';
+import { TaskRes } from './common/Classess';
 
 @Controller()
 @ApiTags('ROOT')
