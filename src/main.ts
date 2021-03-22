@@ -6,6 +6,7 @@ import { HttpExceptionFilter } from './common/fillters/http-exception.fillter';
 import { ValidationExceptionFilter } from './common/fillters/validation-exception.fillter';
 
 async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
   //Exception-Pipe
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -16,15 +17,15 @@ async function bootstrap() {
   //Swagger
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('Payment Gateway Posting API')
-    .setDescription('The Payment API CRUD api')
+    .setTitle('WEBSITE MYHUFIER : SERVER NEXT JS')
+    .setDescription('The Myhufier API CRUD api')
     .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document);
 
-  await app.listen(3004);
+  await app.listen(process.env.PORT);
 
   console.log(`
   ============================================
