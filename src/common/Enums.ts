@@ -4,6 +4,7 @@ export enum RolerUser{
 }
 
 export enum LEN_OF_FIELDS {
-    NICE_NAME_NAME = 100,
-    ID_UUID = 100,
+    LENGTH_LOW = 100,
+    LENGTH_MEDIUM = 250,
+    LENGTH_HEIGHT = 500,
 }

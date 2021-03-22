@@ -1,9 +1,8 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TaskRes } from 'src/common/TaskRes';
 import { CreateUserDto } from 'src/auth/dto/createUser.dto';
-import { DeleteUser } from 'src/auth/dto/DeleteUser';
 import { LoginUserDto } from 'src/auth/dto/loginUserDto.dto';
 import { User } from 'src/common/entities/User.entity';
 import { getRepository } from 'typeorm';
@@ -12,14 +11,14 @@ import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload.interface';
 import { RegistrationStatus } from './interfaces/regisration-status.interface';
 import * as Dics from '../common/MyDictionary.json';
-import { RolerUser } from 'src/common/Enums';
+import { LEN_OF_FIELDS, RolerUser } from 'src/common/Enums';
 
 const libs = require('../common/PublicModules');
 
 @ApiTags('USER')
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService,) {}
+    constructor(private readonly authService: AuthService,) { }
 
     userRepo = getRepository(User);
 
@@ -32,7 +31,7 @@ export class AuthController {
     @UseGuards(AuthGuard())
     @ApiBearerAuth()
     public async testAuth(@Req() req: any): Promise<JwtPayload> {
-        const res =  req.user;
+        const res = req.user;
         const task = libs.fun_makeResFoundSucc(res);
         return task;
     }
@@ -42,7 +41,7 @@ export class AuthController {
     @UseGuards(AuthGuard())
     async getUsers(@Req() req: any): Promise<any> {
         const isClient = libs.fun_isAuthClient(req);
-        if (isClient){
+        if (isClient) {
             return isClient;
         }
         const res = await this.userRepo.find();
@@ -54,22 +53,20 @@ export class AuthController {
     @Get('user/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    async getUser(@Param('id') id: string, @Req() req: any):Promise<any>{
-        var task = new TaskRes();
-        if (!id){
-            task.statusCode = HttpStatus.BAD_REQUEST;
-            task.message = HttpStatus[HttpStatus.BAD_REQUEST];
-            task.bonus = Dics.MISSING_PARAMS;
+    async getUser(@Param('id') id: string, @Req() req: any): Promise<any> {
+        var task = null;
+        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
             return task;
         }
 
         const isClient = libs.fun_isAuthClient(req);
-        if (isClient){
+        if (isClient) {
             return isClient;
         }
 
-        const user = await this.userRepo.findOne({id: id});
-        if (!user){
+        const user = await this.userRepo.findOne({ id: id });
+        if (!user) {
             task.statusCode = HttpStatus.NOT_FOUND;
             task.message = HttpStatus[HttpStatus.NOT_FOUND];
             task.bonus = id;
@@ -81,7 +78,6 @@ export class AuthController {
 
     @Post('user')
     public async register(@Body() createUser: CreateUserDto): Promise<RegistrationStatus> {
-        var task = null;
         const result = await this.authService.register(createUser);
 
         return result;
@@ -90,20 +86,32 @@ export class AuthController {
     @Post('create')
     @UseGuards(AuthGuard())
     @ApiBearerAuth()
-    async createUser(@Req() req: any ,@Body() body: CreateUserDto): Promise<any> {
+    async createUser(@Req() req: any, @Body() body: CreateUserDto): Promise<any> {
         const isClient = libs.fun_isAuthClient(req);
-        if (isClient){
+        if (isClient) {
             return isClient;
         }
 
-        const task = new TaskRes();
+        var task = null;
         const {
             username,
             email,
         } = body;
 
+        // is username length long ?
+        task = libs.fun_isLengthToLong(username, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
+            return task;
+        }
+
+        // is email length long ?
+        task = libs.fun_isLengthToLong(email, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
+            return task;
+        }
+
         // User Name ?
-        let user = await this.userRepo.findOne({where: {username: username}});
+        let user = await this.userRepo.findOne({ where: { username: username } });
         if (user) {
             task.statusCode = HttpStatus.FOUND;
             task.message = HttpStatus[HttpStatus.FOUND];
@@ -112,8 +120,8 @@ export class AuthController {
         }
 
         // Email ?
-        user = await this.userRepo.findOne({where: {email: email}});
-        if (user){
+        user = await this.userRepo.findOne({ where: { email: email } });
+        if (user) {
             task.statusCode = HttpStatus.FOUND;
             task.message = HttpStatus[HttpStatus.FOUND];
             task.bonus = Dics.EMAIL_FOUND;
@@ -124,6 +132,18 @@ export class AuthController {
             displayName,
             password,
         } = body;
+
+        // is displayName length long ?
+        task = libs.fun_isLengthToLong(displayName, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
+            return task;
+        }
+
+        // is password length long ?
+        task = libs.fun_isLengthToLong(password, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
+            return task;
+        }
 
         // Create new
         const newUser = this.userRepo.create();
@@ -148,11 +168,18 @@ export class AuthController {
     @UseGuards(AuthGuard())
     async deleteUser(@Req() req: any, @Param('id') id: string): Promise<any> {
         const isClient = libs.fun_isAuthClient(req);
-        if (isClient){
+        if (isClient) {
             return isClient;
         }
+        var task = null;
+
+        // is id length long ?
+        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
+            return task;
+        }
+
         const user = await this.userRepo.findOne({ where: { id: id } });
-        const task = new TaskRes();
         if (!user) {
             task.statusCode = HttpStatus.NOT_FOUND;
             task.message = HttpStatus[HttpStatus.NOT_FOUND]
@@ -168,25 +195,24 @@ export class AuthController {
     @Put('user/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    async updateUser(@Body() body: CreateUserDto, @Req() req: any, @Param('id') id: string){
-        const task = new TaskRes();
-        if (!id){
-            task.statusCode = HttpStatus.BAD_REQUEST;
-            task.message = HttpStatus[HttpStatus.BAD_REQUEST];
-            task.bonus = Dics.MISSING_PARAMS;
+    async updateUser(@Body() body: CreateUserDto, @Req() req: any, @Param('id') id: string) {
+        var task = null;
+        // is id length long ?
+        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
+        if (task) {
             return task;
         }
 
         const idToken = req.user.id;
-        if (idToken != id){
+        if (idToken != id) {
             task.statusCode = HttpStatus.UNAUTHORIZED;
             task.message = HttpStatus[HttpStatus.UNAUTHORIZED];
             task.bonus = `ID: ${id} # ${idToken}`;
             return task;
         }
 
-        const user = await this.userRepo.findOne({id: idToken});
-        if (!user){
+        const user = await this.userRepo.findOne({ id: idToken });
+        if (!user) {
             task.statusCode = HttpStatus.NOT_FOUND;
             task.message = HttpStatus[HttpStatus.NOT_FOUND];
             task.bonus = id;

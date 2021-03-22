@@ -9,7 +9,7 @@ import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload.interface';
 import { RegistrationStatus } from './interfaces/regisration-status.interface';
 import * as Dics from '../common/MyDictionary.json';
-import { RolerUser } from 'src/common/Enums';
+import { LEN_OF_FIELDS, RolerUser } from 'src/common/Enums';
 import * as bcrypt from 'bcrypt';
 
 const libs = require('../common/PublicModules');
@@ -27,6 +27,30 @@ export class AuthService {
     var task = null;
 
     const { displayName, username, email, password, } = userDto;
+
+    // is displayName length long ?
+    task = libs.fun_isLengthToLong(displayName, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
+
+    // is username length long ?
+    task = libs.fun_isLengthToLong(username, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
+
+    // is username length long ?
+    task = libs.fun_isLengthToLong(email, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
+
+    // is password length long ?
+    task = libs.fun_isLengthToLong(password, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
 
     // check if the user exists in the db    
     const userInDb = await this.userRepo.findOne({
@@ -66,20 +90,35 @@ export class AuthService {
     };
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<LoginStatus> {
+  async login(loginUserDto: LoginUserDto) {
+    var task = null;
     const { username, password } = loginUserDto;
 
+    // is username length long ?
+    task = libs.fun_isLengthToLong(username, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
+
+    // is password length long ?
+    task = libs.fun_isLengthToLong(password, LEN_OF_FIELDS.LENGTH_LOW);
+    if (task){
+      return task;
+    }
+
     // find user in db
-    const user = await this.userRepo.findOne({ where: { username } });
+    const user = await this.userRepo.findOne({ where: { username: username } });
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+      task = libs.fun_makeResError(null, Dics.USERNAME_NOT_MATH);
+      return task;
     }
 
 
     //compare passwords
     const areEqual = await bcrypt.compare(password, user.password);
     if (!areEqual) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      task = libs.fun_makeResError(null, Dics.PASSWORD_NOT_MATH);
+      return task;
     }
 
     // generate and sign token
@@ -89,7 +128,7 @@ export class AuthService {
       email: user.email,
       ...token,
     };
-    const task = libs.fun_makeResCreateSucc(res);
+    task = libs.fun_makeResCreateSucc(res);
     return task;
   }
 

@@ -33,7 +33,7 @@ export class NiceNameService {
         let task = new TaskRes();
 
         // id to long
-        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.ID_UUID);
+        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
@@ -55,7 +55,7 @@ export class NiceNameService {
         const task = new TaskRes();
 
         // name to long?
-        const isLong = libs.fun_isLengthToLong(dto.name, LEN_OF_FIELDS.NICE_NAME_NAME);
+        const isLong = libs.fun_isLengthToLong(dto.name, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
@@ -80,7 +80,7 @@ export class NiceNameService {
         var task = null;
 
         // is long ?
-        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.ID_UUID);
+        const isLong = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (isLong){
             return isLong;
         }
@@ -103,7 +103,7 @@ export class NiceNameService {
     delete = async (id: string) => {
         var task = null;
         // id long ?
-        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.ID_UUID);
+        task = libs.fun_isLengthToLong(id, LEN_OF_FIELDS.LENGTH_LOW);
         if (task){
             return task;
         }
