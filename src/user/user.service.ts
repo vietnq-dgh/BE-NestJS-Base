@@ -2,17 +2,16 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LoginUserDto } from './dto/loginUserDto.dto';
-import { UserDto } from './dto/userDto.dto';
-import { UserEntity } from './entity/user.entity';
+import { User } from '../common/entities/User.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/createUser.dto';
-import { HttpExceptionFilter } from 'src/common/fillters/http-exception.fillter';
+import { RolerUser } from 'src/common/Enums';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepo: Repository<UserEntity>, 
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>, 
     ){}
 
     async findOne(user: any){
@@ -42,7 +41,7 @@ export class UserService {
     }
 
     async create(userDto: CreateUserDto){    
-        const { displayName, username, email, password, confirmPassword, isActive, role} = userDto;
+        const { displayName, username, email, password, } = userDto;
         
         // check if the user exists in the db    
         const userInDb = await this.userRepo.findOne({ 
@@ -61,7 +60,9 @@ export class UserService {
             return { success: false, message: 'Email already exists'};
         }
         
-        const user: UserEntity = await this.userRepo.create({  displayName, username,  password, email, isActive, role});
+        const isActive = true;
+        const role = RolerUser.CLIENT;
+        const user: User = await this.userRepo.create({  displayName, username,  password, email, isActive, role});
         return await this.userRepo.save(user);
     }
 }

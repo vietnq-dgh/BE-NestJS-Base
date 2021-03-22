@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { TaskRes } from './common/TaskRes';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getHello(): TaskRes {
+    const task = new TaskRes();
+    task.statusCode = HttpStatus.OK;
+    task.message = HttpStatus[HttpStatus.OK];
+    task.bonus = 'Wellcome to the website: MyHufier';
+
+    return task;
   }
 }

@@ -1,7 +1,7 @@
 import { Command, Positional } from 'nestjs-command';
 import { Injectable, Logger } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { UserEntity } from '../entity/user.entity';
+import { User } from '../../common/entities/User.entity';
 
 @Injectable()
 export class UserSeed {
@@ -20,18 +20,18 @@ export class UserSeed {
             default: 'admin113'
           }) username: string,
     ) {
-        const admin = new UserEntity();
+        const admin = new User();
         admin.displayName = "admin manager";
         admin.username = 'admin113'
         admin.email = 'phuocnv3008@gmail.com'
         admin.password = '12345678';
 
-        const repository = this.connection.getRepository(UserEntity);
+        const repository = this.connection.getRepository(User);
         const adminExists = await repository.findOne({ where: { username }});
         if (adminExists) {
             return this.logger.warn(`Email ${username} exixtsed !!!`)
         }
-        const result = await this.connection.getRepository(UserEntity).save(admin);
+        const result = await this.connection.getRepository(User).save(admin);
         this.logger.log(`[Seed][Admin] Create new admin successful | ID = ${result.id}`);
     }
 }

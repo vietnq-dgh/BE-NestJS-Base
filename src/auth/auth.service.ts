@@ -22,7 +22,6 @@ export class AuthService {
         };
     
         try {
-          if(userDto.password == userDto.confirmPassword)
           await this.userService.create(userDto);
         } catch (err) {
           status = {

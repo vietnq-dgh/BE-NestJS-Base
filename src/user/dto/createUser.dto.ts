@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEmail, IsString, IsEnum, IsBoolean } from 'class-validator';
-import { rolerUser } from 'src/common/constant';
+import { RolerUser } from 'src/common/Enums';
 
 export class CreateUserDto {
 
@@ -18,26 +18,26 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  confirmPassword: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // confirmPassword: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
-  @ApiProperty({
-    description: "Quyền ADMIN hoặc CLIENT",
-    default: "CLIENT"
-  })
-  @IsEnum(rolerUser)
-  @IsNotEmpty()
-  role: rolerUser;
+  // @ApiProperty({
+  //   description: "Quyền ADMIN hoặc CLIENT",
+  //   default: "CLIENT"
+  // })
+  // @IsEnum(RolerUser)
+  // @IsNotEmpty()
+  // role: RolerUser;
 
-  @ApiProperty()
-  @IsBoolean()
-  @IsNotEmpty()
-  isActive: boolean;
+  // @ApiProperty()
+  // @IsBoolean()
+  // @IsNotEmpty()
+  // isActive: boolean;
 }

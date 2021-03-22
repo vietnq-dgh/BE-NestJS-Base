@@ -4,7 +4,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { CommandModule } from 'nestjs-command';
 import { AuthModule } from './auth/auth.module';
-import { UserEntity } from './user/entity/user.entity';
+import { User } from './common/entities/User.entity';
 import { UserModule } from './user/user.module';
 @Module({
     imports: [
@@ -19,7 +19,7 @@ import { UserModule } from './user/user.module';
               password: configService.get('DB_SERVER_PASSWORD', 'phuocidol@113Aa'),
               database: configService.get('DB_SERVER_NAME', 'DB_TEST_03'),
               entities: [
-                UserEntity,
+                User,
                 ],
               synchronize: true,
             }),
