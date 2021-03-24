@@ -5,14 +5,11 @@ import { CreateUserDto } from 'src/auth/dto/createUser.dto';
 import { LoginUserDto } from 'src/auth/dto/loginUserDto.dto';
 import { UserDto } from 'src/auth/dto/userDto.dto';
 import { Connection } from 'typeorm';
-import { LoginStatus } from './interfaces/login-status.interface';
 import { JwtPayload } from './interfaces/payload.interface';
-import { RegistrationStatus } from './interfaces/regisration-status.interface';
 import * as Dics from '../common/MyDictionary.json';
 import { LEN_OF_FIELDS, RolerUser } from 'src/common/Enums';
 import * as bcrypt from 'bcrypt';
 import PublicModules from "../common/PublicModules";
-import { TaskRes } from 'src/common/Classess';
 
 const libs = new PublicModules();
 
@@ -32,7 +29,7 @@ export class AuthService {
     }
 
     async gets() {
-        const res = await this.userRepo.find();
+        const res = await this.userRepo.find({ where: { isDelete: false } });
         const task = libs.fun_makeResListSucc(res, null, null);
         return task;
     }
@@ -44,7 +41,7 @@ export class AuthService {
             return task;
         }
 
-        const user = await this.userRepo.findOne({ id: id });
+        const user = await this.userRepo.findOne({ id: id, isDelete: false });
         if (!user) {
             task = libs.fun_makeResError(id, Dics.NOT_FOUND);
             return task;
@@ -73,14 +70,14 @@ export class AuthService {
         }
 
         // User Name ?
-        let user = await this.userRepo.findOne({ where: { username: username } });
+        let user = await this.userRepo.findOne({ where: { username: username, isDelete: false } });
         if (user) {
             task = libs.fun_makeResError(username, Dics.USERNAME_FOUND);
             return task;
         }
 
         // Email ?
-        user = await this.userRepo.findOne({ where: { email: email } });
+        user = await this.userRepo.findOne({ where: { email: email, isDelete: false } });
         if (user) {
             task = libs.fun_makeResError(email, Dics.EMAIL_FOUND);
             return task;
@@ -90,6 +87,13 @@ export class AuthService {
             displayName,
             password,
         } = body;
+
+        // check valid password
+        task = libs.fun_isValidPassword(password);
+        if (!task) {
+            task = libs.fun_makeResError(`pwd: ${password} | req: ${Dics.PASSWORD_NON_VALID_MESS}`, Dics.PASSWORD_NON_VALID);
+            return task;
+        }
 
         // is displayName length long ?
         task = libs.fun_isLengthToLong(displayName, LEN_OF_FIELDS.LENGTH_LOW);
@@ -127,13 +131,16 @@ export class AuthService {
             return task;
         }
 
-        const user = await this.userRepo.findOne({ where: { id: id } });
+        const user = await this.userRepo.findOne({ where: { id: id, isDelete: false } });
         if (!user) {
             task = libs.fun_makeResError(id, Dics.NOT_FOUND);
             return task;
         }
-        const delRes = await this.userRepo.delete({ id: id });
-        task = libs.fun_makeResDeleteSucc(delRes);
+
+        // Delete
+        user.isDelete = true;
+        task = await this.userRepo.save(user);
+        task = libs.fun_makeResDeleteSucc(task);
         return task;
     }
 
@@ -145,7 +152,7 @@ export class AuthService {
             return task;
         }
 
-        const user = await this.userRepo.findOne({ id: idToken });
+        const user = await this.userRepo.findOne({ id: idToken, isDelete: false });
         if (!user) {
             task = libs.fun_makeResError(id, Dics.NOT_FOUND);
             return task;
@@ -188,13 +195,20 @@ export class AuthService {
             return task;
         }
 
+        // check valid password
+        task = libs.fun_isValidPassword(password);
+        if (!task) {
+            task = libs.fun_makeResError(`pwd: ${password} | req: ${Dics.PASSWORD_NON_VALID_MESS}`, Dics.PASSWORD_NON_VALID);
+            return task;
+        }
+
         // check if the user exists in the db    
         const userInDb = await this.userRepo.findOne({
-            where: { username: username }
+            where: { username: username, isDelete: false }
         });
 
         const emailInDb = await this.userRepo.findOne({
-            where: { email: email }
+            where: { email: email, isDelete: false }
         });
 
         if (userInDb) {
@@ -243,7 +257,7 @@ export class AuthService {
         }
 
         // find user in db
-        const user = await this.userRepo.findOne({ where: { username: username } });
+        const user = await this.userRepo.findOne({ where: { username: username, isDelete: false } });
         if (!user) {
             task = libs.fun_makeResError(null, Dics.USERNAME_NOT_MATH);
             return task;
@@ -268,13 +282,14 @@ export class AuthService {
         return task;
     }
 
-    async validateUser(payload: JwtPayload): Promise<UserDto> {
+    async validateUser(payload: JwtPayload): Promise<any> {
         const { username } = payload;
         const user = await this.userRepo.findOne({
-            where: { username }
+            where: { username, isDelete: false }
         });
         if (!user) {
-            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+            const task = libs.fun_makeResError(payload, Dics.UNAUTHORIZED);
+            return task;
         }
         return user;
     }
