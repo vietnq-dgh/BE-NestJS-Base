@@ -3,7 +3,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Connection } from "typeorm";
 import { NiceNameService } from "./NiceName.Service";
-import { CreateDto, UpdateDto } from "./NiceName.Dto";
+import { CreateDto } from "./NiceName.Dto";
 import PublicModules from "../common/PublicModules";
 import { ParamsForService } from "src/common/Classess";
 
@@ -69,7 +69,7 @@ export class NiceNameController{
     @Put('nice_name/:id')
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    async put(@Req() req: any, @Param('id') id: string, @Body() body: UpdateDto): Promise<any>{
+    async put(@Req() req: any, @Param('id') id: string, @Body() body: CreateDto): Promise<any>{
         var task = null;
         const isClient = this.libs.fun_isAuthClient(req);
         if (isClient){

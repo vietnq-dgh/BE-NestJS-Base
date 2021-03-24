@@ -1,7 +1,7 @@
 import { NiceName } from "src/common/entities/NiceName.entity";
 import { ParamsForService, TaskRes } from "src/common/Classess";
 import { Repository } from "typeorm";
-import { CreateDto, UpdateDto } from "./NiceName.Dto";
+import { CreateDto } from "./NiceName.Dto";
 import { LEN_OF_FIELDS } from "../common/Enums";
 import { HttpStatus } from "@nestjs/common";
 import * as Dics from '../common/MyDictionary.json'
@@ -22,7 +22,7 @@ export class NiceNameService {
     // **************** DEFAULT ***************
     
     gets = async () => {
-        const list =  await this.repo.find();
+        const list =  await this.repo.find({where: {isDelete: false}});
         const task = this.libs.fun_makeResListSucc(list, null, null);
         return task;
     };
@@ -36,7 +36,7 @@ export class NiceNameService {
             return isLong;
         }
 
-        const find = await this.repo.findOne({where: {id: id}});
+        const find = await this.repo.findOne({where: {id: id, isDelete: false}});
 
         // Not found
         if (!find){
@@ -59,7 +59,7 @@ export class NiceNameService {
         }
 
         // name exists db?
-        const find = await this.repo.findOne({where: {name: dto.name}});
+        const find = await this.repo.findOne({where: {name: dto.name, isDelete: false}});
         if (find){
             task.statusCode = HttpStatus.FOUND;
             task.message = Dics.NAME_FOUND;
@@ -74,7 +74,7 @@ export class NiceNameService {
         return res;
     };
 
-    put = async (id: string, body: UpdateDto) => {
+    put = async (id: string, body: CreateDto) => {
         var task = null;
 
         // is long ?
@@ -84,7 +84,7 @@ export class NiceNameService {
         }
 
         // find one if exists
-        const find = await this.repo.findOne({where: {id: id}});
+        const find = await this.repo.findOne({where: {id: id, isDelete: false}});
         if (!find){
             const task = this.libs.fun_makeResNotFound(id);
             return task;
@@ -107,14 +107,15 @@ export class NiceNameService {
         }
 
         // find one if exists ?
-        const find = await this.repo.findOne({where: {id: id}});
+        const find = await this.repo.findOne({where: {id: id, isDelete: false}});
         if (!find){
             task = this.libs.fun_makeResNotFound(id);
             return task;
         }
 
         // delete
-        task = await this.repo.delete({id: id});
+        find.isDelete = true;
+        task = await this.repo.save(find)
         task = this.libs.fun_makeResDeleteSucc(task);
         return task;
     }

@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { TaskRes } from 'src/common/Classess';
 import { AuthService } from './auth.service';
 import { JwtPayload } from './interfaces/payload.interface';
 require("dotenv").config({path: '.env'});
@@ -19,8 +20,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     async validate(payload: JwtPayload){
         const user = await this.authService.validateUser(payload);
         if (!user) {
-            throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);    
+            const task = new TaskRes();
+            task.bonus = payload;
+            task.message = HttpStatus[HttpStatus.UNAUTHORIZED];
+            task.statusCode = HttpStatus.UNAUTHORIZED;
+            return task;
         }    
-        return user;  
+        return user;
     }
 }
