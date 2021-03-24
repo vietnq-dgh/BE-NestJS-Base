@@ -105,6 +105,34 @@ class PublicModules {
     
         return newPass;
     };
+
+    fun_isLetter = (char: string) => {
+        return char.length === 1 && char.match(/[a-z]/i);
+    }
+
+    fun_isDigit = (char: string) => {
+        return /^\d+$/.test(char);
+    }
+
+    fun_isValidPassword = (passwordCheck: string) => {
+        if (passwordCheck == null || passwordCheck.trim().length < 6){
+            return false;
+        }
+        passwordCheck = passwordCheck.trim();
+        let countLetter = 0;
+        let countDigit = 0;
+        for(let i = 0; i < passwordCheck.length; i++){
+            const ch = passwordCheck.charAt(i);
+            if (this.fun_isDigit(ch)){
+                countDigit += 1;
+            }
+            if (this.fun_isLetter(ch)){
+                countLetter += 1;
+            }
+        }
+
+        return countLetter != 0 && countDigit != 0;
+    };
 }
 
 export default PublicModules;

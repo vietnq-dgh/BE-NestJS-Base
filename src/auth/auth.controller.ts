@@ -1,16 +1,13 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { TaskRes } from 'src/common/Classess';
 import { CreateUserDto } from 'src/auth/dto/createUser.dto';
 import { LoginUserDto } from 'src/auth/dto/loginUserDto.dto';
 import { User } from 'src/common/entities/User.entity';
 import { getRepository } from 'typeorm';
 import { AuthService } from './auth.service';
 import { LoginStatus } from './interfaces/login-status.interface';
-import { RegistrationStatus } from './interfaces/regisration-status.interface';
-import * as Dics from '../common/MyDictionary.json';
-import { LEN_OF_FIELDS, RolerUser } from 'src/common/Enums';
+import { LEN_OF_FIELDS } from 'src/common/Enums';
 import PublicModules from "../common/PublicModules";
 
 const libs = new PublicModules();
@@ -58,7 +55,7 @@ export class AuthController {
             return isClient;
         }
 
-        task = this.authService.get(id);
+        task = await this.authService.get(id);
         return task;
     }
 
@@ -78,7 +75,7 @@ export class AuthController {
             return isClient;
         }
 
-        const task = this.authService.create(body);
+        const task = await this.authService.create(body);
 
         return task;
     }
@@ -91,7 +88,7 @@ export class AuthController {
         if (isClient) {
             return isClient;
         }
-        const task = this.authService.delete(id);
+        const task = await this.authService.delete(id);
         return task;
     }
 
@@ -106,7 +103,7 @@ export class AuthController {
             return task;
         }
 
-        task = this.authService.put(req, id, body);
+        task = await this.authService.put(req, id, body);
         return task;
     }
 }
