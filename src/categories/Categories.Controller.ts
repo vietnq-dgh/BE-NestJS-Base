@@ -12,6 +12,8 @@ import {
 @Controller('categories')
 @ApiTags('CATEGORIES')
 export class CategoriesController {
+
+    // **************** DEFAULT ***************
     libs = null as PublicModules;
     cateService = null as CategoriesService;
 
@@ -22,6 +24,7 @@ export class CategoriesController {
         params.libs = this.libs;
         this.cateService = new CategoriesService(params);
     }
+    // **************** DEFAULT ***************
 
     @Get('categories')
     async gets() {
