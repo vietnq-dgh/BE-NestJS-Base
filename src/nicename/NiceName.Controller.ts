@@ -10,8 +10,10 @@ import { ParamsForService } from "src/common/Classess";
 @ApiTags('NICE NAME')
 @Controller('nice_name')
 export class NiceNameController{
-    nNameService = null;
-    libs = null;
+
+    // **************** DEFAULT ***************
+    nNameService = null as NiceNameService;
+    libs = null as PublicModules;
 
     constructor(private readonly conn: Connection) {
         this.libs = new PublicModules();
@@ -20,6 +22,7 @@ export class NiceNameController{
         params.libs = this.libs;
         this.nNameService = new NiceNameService(params);
     }
+    // **************** DEFAULT ***************
 
     @Get('nice_name')
     @ApiBearerAuth()
