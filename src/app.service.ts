@@ -5,9 +5,10 @@ import { TaskRes } from './common/Classess';
 export class AppService {
   getHello(): TaskRes {
     const task = new TaskRes();
+    task.success = true;
     task.statusCode = HttpStatus.OK;
     task.message = HttpStatus[HttpStatus.OK];
-    task.bonus = 'Wellcome to the website: MyHufier';
+    task.bonus = 'Wellcome to the SERVICE: MARKET-PLACE';
 
     return task;
   }

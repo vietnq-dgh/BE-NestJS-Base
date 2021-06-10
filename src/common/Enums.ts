@@ -1,6 +1,6 @@
 export enum RolerUser{
     ADMIN = 'ADMIN',
-    CLIENT = 'CLIENT'
+    MOD = 'MOD'
 }
 
 export enum LEN_OF_FIELDS {

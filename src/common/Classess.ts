@@ -1,15 +1,16 @@
-import { Connection } from "typeorm";
-import PublicModules from "./PublicModules";
-
-export class ParamsForService {
-    conn: Connection;
-    libs: PublicModules;
-}
+import { ApiProperty } from "@nestjs/swagger";
 
 export class TaskRes {
-    statusCode: number;
-    message: string;
-    result: any;
-    total: number;
-    bonus: any;
+  @ApiProperty()
+  statusCode: number;
+  @ApiProperty()
+  message: string;
+  @ApiProperty()
+  result: any;
+  @ApiProperty()
+  total: number;
+  @ApiProperty()
+  bonus: any;
+  @ApiProperty()
+  success: boolean;
 }

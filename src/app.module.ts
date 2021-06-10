@@ -3,17 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { config } from './orm.config';
-import { AuthModule } from './auth/auth.module';
 import { CommandModule } from 'nestjs-command';
-import { NiceNameController } from './nicename/NiceName.Controller';
-import { CategoriesController } from './categories/Categories.Controller';
+import { UserModule } from './modules/user/user.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config), AuthModule, CommandModule,],
+  imports: [
+    TypeOrmModule.forRoot(config), 
+    CommandModule,
+    UserModule,
+    CategoryModule,
+  ],
   controllers: [
     AppController,
-    NiceNameController,
-    CategoriesController,
   ],
   providers: [AppService,],
 })
