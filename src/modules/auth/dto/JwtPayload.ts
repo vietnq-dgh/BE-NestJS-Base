@@ -1,3 +1,4 @@
 export class JwtPayload {
-  address: string;
+  email: string;
+  password: string;
 }

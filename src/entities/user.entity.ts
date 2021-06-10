@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { RolerUser } from "src/common/Enums";
+import { IsEmail } from "class-validator";
 
 @Entity()
 export class User {
