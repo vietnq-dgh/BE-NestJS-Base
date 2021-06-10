@@ -6,11 +6,13 @@ import { config } from './orm.config';
 import { CommandModule } from 'nestjs-command';
 import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(config), 
+    TypeOrmModule.forRoot(config),
     CommandModule,
+    AuthModule,
     UserModule,
     CategoryModule,
   ],
