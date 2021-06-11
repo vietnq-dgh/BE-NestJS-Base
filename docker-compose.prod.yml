@@ -8,6 +8,7 @@ services:
   NEW_DETAIL_NEW_SERVICE_DB:
     container_name: NEW_DETAIL_NEW_SERVICE_DB_POSTGRES
     image: postgres:11
+    restart: always
     env_file:
       - .env
     ports:
@@ -26,6 +27,7 @@ services:
     image: adminer
     depends_on:
       - NEW_DETAIL_NEW_SERVICE_DB
+    restart: always
     env_file:
       - .env
     ports:
