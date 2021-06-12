@@ -7,6 +7,7 @@ import { CommandModule } from 'nestjs-command';
 import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
     AuthModule,
     UserModule,
     CategoryModule,
+    FilesModule,
   ],
   controllers: [
     AppController,
