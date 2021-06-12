@@ -2,7 +2,9 @@ import { HttpStatus, NotFoundException } from "@nestjs/common";
 import { TaskRes } from "./Classess";
 import * as Dics from './MyDictionary.json'
 import { PassportModule } from "@nestjs/passport";
-require("dotenv").config({path: '.env'});
+import { join } from "path";
+import { uuid } from "uuidv4";
+require("dotenv").config({ path: '.env' });
 
 export class PublicModules {
 
@@ -71,7 +73,7 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResNotFound = (bonus: any, name:string = '') => {
+  static fun_makeResNotFound = (bonus: any, name: string = '') => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.NOT_FOUND;
     task.success = false;
@@ -80,7 +82,7 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResAlreadyExist = (bonus: any, name:string = '') => {
+  static fun_makeResAlreadyExist = (bonus: any, name: string = '') => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.FOUND;
     task.success = false;
@@ -140,7 +142,7 @@ export class PublicModules {
   }
 
   static fun_isValidPassword = (passwordCheck: string) => {
-    let task:TaskRes = null;
+    let task: TaskRes = null;
     let valid = false;
     if (passwordCheck == null || passwordCheck.trim().length < 6) {
       task = PublicModules.fun_makeResError('To Protect Password ...', Dics.PASSWORD_NON_VALID_MESS);
@@ -160,12 +162,50 @@ export class PublicModules {
     }
 
     valid = countLetter != 0 && countDigit != 0;
-    if (valid){
+    if (valid) {
       task = PublicModules.fun_makeResCreateSucc(valid);
       return task;
     }
-    
+
     task = PublicModules.fun_makeResError('To Protect Password ...', Dics.PASSWORD_NON_VALID_MESS);
     return task;
+  };
+
+  static fun_getTimeStamp = ({ isISO = false }) => {
+    if (isISO)
+      return new Date().toISOString();
+    return new Date().getTime();
+  }
+
+  static fun_getUuid = () => {
+    return uuid();
+  }
+
+  static fun_renameImage = (originFileName: string) => {
+    const fN = originFileName;
+    const ext = fN.substring(fN.lastIndexOf('.'), fN.length);
+    let newFileName = process.env.APP_NAME + '_' + PublicModules.fun_getTimeStamp({ isISO: true });
+    newFileName = newFileName.replace(new RegExp(':', 'g'), '-');
+    newFileName += PublicModules.fun_getUuid();
+    newFileName += ext;
+    return newFileName;
+  }
+
+  static fun_saveFile = async (folder: string = '/uploads/images/', fileName: string, data: any) => {
+    return new Promise((resolve, reject) => {
+      const path = join(process.cwd(), folder);
+      const fs = require('fs');
+      // folder exists ?
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+      }
+
+      fs.writeFile(path + fileName, data, (err: any) => {
+        if (err)
+          reject(err);
+        else
+          resolve(fileName);
+      })
+    });
   };
 }

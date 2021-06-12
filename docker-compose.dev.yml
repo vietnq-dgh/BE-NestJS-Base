@@ -3,17 +3,17 @@ networks:
   app-tier:
     driver: bridge
 volumes:
-  NEW_DETAIL_NEW_DB_BACKUP:
+  NEST_BASE_BY_VIETSLDB_BACKUP:
 services:
-  NEW_DETAIL_NEW_SERVICE_DB:
-    container_name: NEW_DETAIL_NEW_SERVICE_DB_POSTGRES
+  NEST_BASE_BY_VIETSLSERVICE_DB:
+    container_name: NEST_BASE_BY_VIETSLSERVICE_DB_POSTGRES
     image: postgres:11
     env_file:
       - .env
     ports:
       - ${DB_POSTGRES_PORT}:5432
     volumes:
-      - NEW_DETAIL_NEW_DB_BACKUP:/var/lib/postgresql/data
+      - NEST_BASE_BY_VIETSLDB_BACKUP:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -22,10 +22,10 @@ services:
     networks:
       - app-tier
   adminer:
-    container_name: NEW_DETAIL_NEW_SERVICE_DB_ADMINER
+    container_name: NEST_BASE_BY_VIETSLSERVICE_DB_ADMINER
     image: adminer
     depends_on:
-      - NEW_DETAIL_NEW_SERVICE_DB
+      - NEST_BASE_BY_VIETSLSERVICE_DB
     env_file:
       - .env
     ports:
