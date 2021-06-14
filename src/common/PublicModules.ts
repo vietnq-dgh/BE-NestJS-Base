@@ -100,7 +100,7 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResListSucc = (list: Array<any>, total: number, bonus: any) => {
+  static fun_makeResListSucc = (list: Array<any>, total?: number, bonus?: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.OK;
     task.success = true;

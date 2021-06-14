@@ -1,12 +1,12 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Post } from "./post.entity";
 
 @Entity()
-export class Category {
+export class TagName {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({nullable: false})
+  @Column()
   name: string;
 
   @CreateDateColumn()
@@ -19,6 +19,6 @@ export class Category {
   deleteAt: Date;
 
   //===== foreign key
-  @OneToMany(type => Post, post => post.cate)
+  @ManyToMany(() => Post, (post) => post.tags)
   posts: Post[];
 }

@@ -40,4 +40,11 @@ export class UserService {
 
     return task;
   }
+
+  async gets(){
+    let task: TaskRes = null;
+    task = PublicModules.fun_makeResListSucc(await this.userRepo.find());
+
+    return task;
+  }
 }
