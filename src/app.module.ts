@@ -13,10 +13,10 @@ import { FilesModule } from './modules/files/files.module';
   imports: [
     TypeOrmModule.forRoot(config),
     CommandModule,
+    FilesModule,
     AuthModule,
     UserModule,
     CategoryModule,
-    FilesModule,
   ],
   controllers: [
     AppController,
