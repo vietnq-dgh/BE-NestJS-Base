@@ -8,6 +8,8 @@ import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
+import { TagNameModule } from './modules/tag-name/tag-name.module';
+import { PostModule } from './modules/post/post.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { FilesModule } from './modules/files/files.module';
     AuthModule,
     UserModule,
     CategoryModule,
+    TagNameModule,
+    PostModule,
   ],
   controllers: [
     AppController,

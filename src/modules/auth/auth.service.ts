@@ -55,6 +55,41 @@ export class AuthService {
       });
   }
 
+
+  seedDefaultMod(userName: string, email: string, password: string) {
+    this.userRepo.findOne({ where: { username: userName } })
+      .then((find) => {
+        // ignore ?
+        if (find) return;
+        find = this.userRepo.create();
+        find.displayName = 'Display name default';
+        find.username = userName;
+        find.password = password;
+        find.email = email;
+        find.role = RolerUser.MOD,
+          find.niceName = 'Nice name default';
+        //save
+        this.userRepo.save(find);
+      });
+  }
+
+  seedDefaultMem(userName: string, email: string, password: string) {
+    this.userRepo.findOne({ where: { username: userName } })
+      .then((find) => {
+        // ignore ?
+        if (find) return;
+        find = this.userRepo.create();
+        find.displayName = 'Display name default';
+        find.username = userName;
+        find.password = password;
+        find.email = email;
+        find.role = RolerUser.MEM,
+          find.niceName = 'Nice name default';
+        //save
+        this.userRepo.save(find);
+      });
+  }
+
   async login(dto: LoginDto) {
     let task: TaskRes = null;
     const find = await this.userRepo.findOne({ where: { email: dto.email } });

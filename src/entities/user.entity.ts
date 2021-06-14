@@ -31,7 +31,7 @@ export class User {
   })
   email: string;
 
-  @Column('enum', { enum: RolerUser , default: RolerUser.MOD },)
+  @Column('enum', { enum: RolerUser , default: RolerUser.MEM },)
   role: RolerUser;
 
   @CreateDateColumn()
