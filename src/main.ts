@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/fillters/http-exception.fillter';
 import { ValidationExceptionFilter } from './common/fillters/validation-exception.fillter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   let app = null;
@@ -42,6 +43,8 @@ async function bootstrap() {
     methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS,HEAD,PATCH",
     credentials: true,
   });
+
+  app.use(cookieParser());
 
   //Swagger
   const swaggerConfig = new DocumentBuilder()
