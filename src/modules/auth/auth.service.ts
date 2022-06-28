@@ -9,6 +9,7 @@ import { RolerUser } from 'src/common/Enums';
 import { LoginDto } from './dto/login.dto';
 import { TaskRes } from 'src/common/Classess';
 import * as bcrypt from "bcrypt";
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -23,13 +24,14 @@ export class AuthService {
 
   async validateUser(payload: JwtPayload): Promise<User> {
     const { email, password } = payload;
-    const user = await this.userRepo.findOne({where: {email: email }});
+    const user = await this.userRepo.findOne({ where: { email: email } });
     if (!user) throw new UnauthorizedException();
     // pass correct ?
     const isPass = password === user.password;
     if (!isPass) throw new UnauthorizedException();
 
-    return user;
+    const _user = plainToClass(User, { ...user, password: '' });
+    return _user;
   }
 
   async createToken(dataSign: any, exp: any = PublicModules.TOKEN_EXPIRESIN) {
@@ -39,6 +41,7 @@ export class AuthService {
   }
 
   seedDefaultAdmin(userName: string, email: string, password: string) {
+    // this.userRepo.delete({username: userName});
     this.userRepo.findOne({ where: { username: userName } })
       .then((find) => {
         // ignore ?
@@ -48,8 +51,9 @@ export class AuthService {
         find.username = userName;
         find.password = password;
         find.email = email;
-        find.role = RolerUser.ADMIN,
-          find.niceName = 'Nice name default';
+        find.role = RolerUser.ADMIN;
+        find.niceName = 'Nice name default';
+        find.isActive = true;
         //save
         this.userRepo.save(find);
       });
@@ -113,14 +117,13 @@ export class AuthService {
         token: token,
         refresh: refresh,
       },
-      user: find,
     });
     task = PublicModules.fun_makeResCreateSucc(result);
 
     return task;
   }
 
-  async me(req: any){
+  async me(req: any) {
     let task: TaskRes = null;
     task = PublicModules.fun_makeResFoundSucc(req.user);
 

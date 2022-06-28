@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards } from '@nes
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGaurd } from '../auth/Guards/roles.gaurd';
 import { RolerUser } from 'src/common/Enums';
@@ -15,7 +15,6 @@ export class PostController {
   @Post()
   @UseGuards(AuthGuard(),new RolesGaurd(RolerUser.ADMIN))
   @ApiOperation({summary: 'Push a post into DB role [ ADMIN ]'})
-  @ApiBearerAuth()
   async create(@Body() createPostDto: CreatePostDto) {
     return await this.postService.create(createPostDto);
   }
@@ -35,7 +34,6 @@ export class PostController {
   @Put(':id')
   @UseGuards(AuthGuard(),new RolesGaurd(RolerUser.ADMIN))
   @ApiOperation({summary: 'Update post by id role [ ADMIN ]'})
-  @ApiBearerAuth()
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(+id, updatePostDto);
   }
@@ -43,7 +41,6 @@ export class PostController {
   @Delete(':id')
   @UseGuards(AuthGuard(),new RolesGaurd(RolerUser.ADMIN))
   @ApiOperation({summary: 'Delete post by id role [ ADMIN ]'})
-  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.postService.remove(+id);
   }

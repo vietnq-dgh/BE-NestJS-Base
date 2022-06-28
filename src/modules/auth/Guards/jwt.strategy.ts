@@ -5,13 +5,22 @@ import { TaskRes } from "src/common/Classess";
 import { PublicModules } from "src/common/PublicModules";
 import { AuthService } from "../auth.service";
 import { JwtPayload } from "../dto/JwtPayload";
+import { Request } from "express";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
       secretOrKey: PublicModules.TOKEN_SECRETKEY,
+      jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
+        let data = request?.cookies["jwt"];
+        if (!data) {
+          return null;
+        }
+        
+        return data;
+      }])
     });
   }
 

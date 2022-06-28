@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Res, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Request, Response } from 'express';
+import { PublicModules } from 'src/common/PublicModules';
 
 @Controller('auth')
 @ApiTags('AUTH')
@@ -14,15 +16,27 @@ export class AuthController {
 
   @Post()
   @ApiOperation({summary: 'Login to authen'})
-  async login(@Body() dto: LoginDto){
-    return await this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response){
+    const result = await this.authService.login(dto);
+    // set cookie for client
+    res.cookie('jwt', result.result.gaurd.token, {
+      httpOnly: true,
+      secure: true,
+    });
+    return result;
+  }
+
+  @Delete()
+  @ApiOperation({summary: 'Logout'})
+  logout(@Res({ passthrough: true }) res: Response){
+    res.clearCookie('jwt');
+    return PublicModules.fun_makeResDeleteSucc('jwt');
   }
 
   @Get()
   @UseGuards(AuthGuard())
-  @ApiBearerAuth()
   @ApiOperation({summary: 'Get user profile'})
-  async me(@Req() req: any){
+  async me(@Req() req: Request){
     return await this.authService.me(req);
   }
 }
