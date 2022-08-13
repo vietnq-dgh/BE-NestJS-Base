@@ -1,0 +1,29 @@
+version: '3'
+volumes:
+  PROD_NEST_BASE_BY_VIETSL_DB_BACKUP:
+services:
+  PROD_NEST_BASE_BY_VIETSL_SERVICE_DB:
+    container_name: PROD_NEST_BASE_BY_VIETSL_SERVICE_DB_MYSQL
+    image: mysql:8.0.26
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${DB_DATABASE_PORT}:3306
+    volumes:
+      - PROD_NEST_BASE_BY_VIETSL_DB_BACKUP:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+  adminer:
+    container_name: PROD_NEST_BASE_BY_VIETSL_SERVICE_DB_ADMINER
+    image: adminer
+    restart: always
+    depends_on:
+      - PROD_NEST_BASE_BY_VIETSL_SERVICE_DB
+    env_file:
+      - .env
+    ports:
+      - ${DB_ADMINER_PORT}:8080
