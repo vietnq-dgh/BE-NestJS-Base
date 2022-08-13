@@ -104,3 +104,4 @@ dist
 
 #===== MY CONFIG
 uploads/images/
+.env
