@@ -4,10 +4,13 @@ import * as Dics from './MyDictionary.json'
 import { PassportModule } from "@nestjs/passport";
 import { join } from "path";
 import { uuid } from "uuidv4";
+import moment from 'moment';
+
 require("dotenv").config({ path: '.env' });
 
 // Nodejs encryption with CTR
 const crypto = require('crypto');
+const dateTimeFormat = "yyyy/MM/DD HH:mm:ss";
 
 export class PublicModules {
 
@@ -215,5 +218,12 @@ export class PublicModules {
   static fun_encryptMD5 = (text: string) => {
     const hash = crypto.createHash('md5').update(text).digest('hex');
     return hash;
+  };
+
+  static fun_getCurrentTimestampUTC_Moment(isFullDay: boolean = false) {
+    if (isFullDay)
+      return moment().utc().format(dateTimeFormat);
+    var current = moment().utc().valueOf();
+    return (current - current % 1000) / 1000;
   };
 }
