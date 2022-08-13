@@ -3,18 +3,17 @@ networks:
   app-tier:
     driver: bridge
 volumes:
-  NEST_BASE_BY_VIETSL_DB_BACKUP:
+  DEV_NEST_BASE_BY_VIETSL_DB_BACKUP:
 services:
-  NEST_BASE_BY_VIETSL_SERVICE_DB:
-    container_name: NEST_BASE_BY_VIETSL_SERVICE_DB_POSTGRES
+  DEV_NEST_BASE_BY_VIETSL_SERVICE_DB:
+    container_name: DEV_NEST_BASE_BY_VIETSL_SERVICE_DB_POSTGRES
     image: postgres:11
-    restart: always
     env_file:
-      - .env
+      - ../.env
     ports:
-      - ${DB_POSTGRES_PORT}:5432
+      - ${DB_DATABASE_PORT}:5432
     volumes:
-      - NEST_BASE_BY_VIETSL_DB_BACKUP:/var/lib/postgresql/data
+      - DEV_NEST_BASE_BY_VIETSL_DB_BACKUP:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -23,13 +22,12 @@ services:
     networks:
       - app-tier
   adminer:
-    container_name: NEST_BASE_BY_VIETSL_SERVICE_DB_ADMINER
+    container_name: DEV_NEST_BASE_BY_VIETSL_SERVICE_DB_ADMINER
     image: adminer
     depends_on:
-      - NEST_BASE_BY_VIETSL_SERVICE_DB
-    restart: always
+      - DEV_NEST_BASE_BY_VIETSL_SERVICE_DB
     env_file:
-      - .env
+      - ../.env
     ports:
       - ${DB_ADMINER_PORT}:8080
     networks:

@@ -3,7 +3,7 @@ require('dotenv/config');
 
 const { 
   DB_HOST, 
-  DB_POSTGRES_PORT,
+  DB_DATABASE_PORT,
   DB_USERNAME,
   DB_DATABASE,
   DB_PASSWORD,
@@ -13,7 +13,7 @@ const {
 export const config: TypeOrmModuleOptions = {
     type: 'postgres',
     host: DB_HOST,
-    port: Number.parseInt(DB_POSTGRES_PORT),
+    port: Number.parseInt(DB_DATABASE_PORT),
     username: DB_USERNAME,
     database: DB_DATABASE,
     password: DB_PASSWORD,
