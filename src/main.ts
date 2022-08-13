@@ -5,6 +5,9 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/fillters/http-exception.fillter';
 import { ValidationExceptionFilter } from './common/fillters/validation-exception.fillter';
 import * as cookieParser from 'cookie-parser';
+import { PublicModules } from './common/PublicModules';
+
+const APP_NAME = process.env.APP_NAME;
 
 async function bootstrap() {
   let app = null;
@@ -49,20 +52,22 @@ async function bootstrap() {
   //Swagger
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('SERVICE MARKET-PLACE : SERVER NEST JS')
-    .setDescription('SERVICE MARKET-PLACE API CRUD')
+    .setTitle(`SERVICE NEST JS: ${APP_NAME}`)
+    .setDescription(`SERVICE ${APP_NAME} API CRUD`)
     .setVersion('1.0')
     .build();
 
+  const swagger_router_text = `[be ${APP_NAME} @API Server is running on]`;
+  const swagger_router_hash = PublicModules.fun_encryptMD5(swagger_router_text);
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup(`api-docs/${swagger_router_hash}`, app, document);
 
   await app.listen(process.env.PORT);
 
   console.log(`
   ============================================
 
-  API Server is running on: ${await app.getUrl()}/api-docs
+  API Server is running on: ${await app.getUrl()}/api-docs/${swagger_router_hash}
 
   ============================================
   `);

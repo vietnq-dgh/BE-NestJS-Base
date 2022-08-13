@@ -7,8 +7,7 @@ export class AppService {
     const task = new TaskRes();
     task.success = true;
     task.statusCode = HttpStatus.OK;
-    task.message = HttpStatus[HttpStatus.OK];
-    task.bonus = 'Wellcome to the SERVICE: MARKET-PLACE';
+    task.message = `Wellcome to the SERVICE: ${process.env.APP_NAME}`;
 
     return task;
   }

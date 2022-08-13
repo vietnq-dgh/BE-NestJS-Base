@@ -10,7 +10,7 @@ export class TaskRes {
   @ApiProperty()
   total: number;
   @ApiProperty()
-  bonus: any;
+  error: any;
   @ApiProperty()
   success: boolean;
 }

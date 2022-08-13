@@ -11,32 +11,40 @@ import { PublicModules } from 'src/common/PublicModules';
 export class AuthController {
   constructor(private readonly authService: AuthService) {
     // seed default admin
-    this.authService.seedDefaultAdmin('admin', 'admin@gmail.com', 'admin@123');
+    const env = process.env.ENV;
+    const isDev = env.toLowerCase() === 'dev';
+    if (isDev) {
+      this.authService.seedDefaultAdmin('admin', 'admin@gmail.com', 'admin@123_default_vietsaclo');
+      this.authService.seedDefaultMod('mod', 'mod@gmail.com', 'mod@123_default_vietsaclo');
+      this.authService.seedDefaultMem('mem', 'mem@gmail.com', 'mem@123_default_vietsaclo');
+    }
   }
 
   @Post()
-  @ApiOperation({summary: 'Login to authen'})
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response){
+  @ApiOperation({ summary: 'Login to authen' })
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.login(dto);
-    // set cookie for client
-    res.cookie('jwt', result.result.gaurd.token, {
-      httpOnly: true,
-      secure: true,
-    });
+    // set cookie for client?
+    if (result.success) {
+      res.cookie('jwt', result.result.gaurd.token, {
+        httpOnly: true,
+        secure: true,
+      });
+    }
     return result;
   }
 
   @Delete()
-  @ApiOperation({summary: 'Logout'})
-  logout(@Res({ passthrough: true }) res: Response){
+  @ApiOperation({ summary: 'Logout' })
+  logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('jwt');
     return PublicModules.fun_makeResDeleteSucc('jwt');
   }
 
   @Get()
   @UseGuards(AuthGuard())
-  @ApiOperation({summary: 'Get user profile'})
-  async me(@Req() req: Request){
+  @ApiOperation({ summary: 'Get user profile' })
+  async me(@Req() req: Request) {
     return await this.authService.me(req);
   }
 }

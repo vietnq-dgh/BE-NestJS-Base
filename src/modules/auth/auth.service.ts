@@ -53,7 +53,6 @@ export class AuthService {
         find.email = email;
         find.role = RolerUser.ADMIN;
         find.niceName = 'Nice name default';
-        find.isActive = true;
         //save
         this.userRepo.save(find);
       });
@@ -100,6 +99,11 @@ export class AuthService {
     // exists ?
     if (!find) {
       task = PublicModules.fun_makeResNotFound(null, 'EMAIL');
+      return task;
+    }
+    // user active ?
+    if (!find.isActive) {
+      task = PublicModules.fun_makeResError(null, 'User is not active');
       return task;
     }
     // pass correct ?

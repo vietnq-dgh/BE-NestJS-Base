@@ -6,6 +6,9 @@ import { join } from "path";
 import { uuid } from "uuidv4";
 require("dotenv").config({ path: '.env' });
 
+// Nodejs encryption with CTR
+const crypto = require('crypto');
+
 export class PublicModules {
 
   static TOKEN_SECRETKEY = process.env.TOKEN_SECRETKEY;
@@ -30,7 +33,7 @@ export class PublicModules {
       task.statusCode = HttpStatus.LENGTH_REQUIRED;
       task.success = false;
       task.message = Dics.LEN_TOO_LONG;
-      task.bonus = `Length: ${str.length} / ${len}`;
+      task.error = `Length: ${str.length} / ${len}`;
       return task;
     }
 
@@ -73,21 +76,21 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResNotFound = (bonus: any, name: string = '') => {
+  static fun_makeResNotFound = (error: any, name: string = '') => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.NOT_FOUND;
     task.success = false;
     task.message = `${name} ${Dics.NOT_FOUND}`;
-    task.bonus = bonus;
+    task.error = error;
     return task;
   }
 
-  static fun_makeResAlreadyExist = (bonus: any, name: string = '') => {
+  static fun_makeResAlreadyExist = (error: any, name: string = '') => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.FOUND;
     task.success = false;
     task.message = `${name} ${Dics.ALREADY_EXIST}`;
-    task.bonus = bonus;
+    task.error = error;
     return task;
   }
 
@@ -100,7 +103,7 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResListSucc = (list: Array<any>, total?: number, bonus?: any) => {
+  static fun_makeResListSucc = (list: Array<any>, total?: number, error?: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.OK;
     task.success = true;
@@ -111,14 +114,14 @@ export class PublicModules {
     } else {
       task.total = list.length;
     }
-    if (bonus) {
-      task.bonus = bonus;
+    if (error) {
+      task.error = error;
     }
 
     return task;
   };
 
-  static fun_makeResError = (bonus: any, mess: any) => {
+  static fun_makeResError = (error: any, mess: any) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.FAILED_DEPENDENCY;
     task.success = false;
@@ -126,10 +129,10 @@ export class PublicModules {
       task.message = mess;
     else
       task.message = Dics.FAILED_DEPENDENCY;
-    if (bonus)
-      task.bonus = bonus;
+    if (error)
+      task.error = error;
     else
-      task.bonus = Dics.NO_BONUS;
+      task.error = Dics.NO_BONUS;
     return task;
   }
 
@@ -207,5 +210,10 @@ export class PublicModules {
           resolve(fileName);
       })
     });
+  };
+
+  static fun_encryptMD5 = (text: string) => {
+    const hash = crypto.createHash('md5').update(text).digest('hex');
+    return hash;
   };
 }

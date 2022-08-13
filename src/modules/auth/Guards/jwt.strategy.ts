@@ -1,7 +1,6 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { TaskRes } from "src/common/Classess";
 import { PublicModules } from "src/common/PublicModules";
 import { AuthService } from "../auth.service";
 import { JwtPayload } from "../dto/JwtPayload";
