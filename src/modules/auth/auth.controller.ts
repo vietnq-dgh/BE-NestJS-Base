@@ -14,9 +14,9 @@ export class AuthController {
     const env = process.env.ENV;
     const isDev = env.toLowerCase() === 'dev';
     if (isDev) {
-      this.authService.seedDefaultAdmin('admin', 'admin@gmail.com', 'admin@123_default_vietsaclo');
-      this.authService.seedDefaultMod('mod', 'mod@gmail.com', 'mod@123_default_vietsaclo');
-      this.authService.seedDefaultMem('mem', 'mem@gmail.com', 'mem@123_default_vietsaclo');
+      this.authService.seedDefaultAdmin('admin', 'admin@gmail.com', 'admin@123');
+      this.authService.seedDefaultMod('mod', 'mod@gmail.com', 'mod@123');
+      this.authService.seedDefaultMem('mem', 'mem@gmail.com', 'mem@123');
     }
   }
 

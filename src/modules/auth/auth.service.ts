@@ -52,6 +52,7 @@ export class AuthService {
         find.password = password;
         find.email = email;
         find.role = RolerUser.ADMIN;
+        find.isActive = true;
         find.niceName = 'Nice name default';
         //save
         this.userRepo.save(find);
@@ -69,8 +70,9 @@ export class AuthService {
         find.username = userName;
         find.password = password;
         find.email = email;
-        find.role = RolerUser.MOD,
-          find.niceName = 'Nice name default';
+        find.role = RolerUser.MOD;
+        find.isActive = true;
+        find.niceName = 'Nice name default';
         //save
         this.userRepo.save(find);
       });
@@ -86,8 +88,9 @@ export class AuthService {
         find.username = userName;
         find.password = password;
         find.email = email;
-        find.role = RolerUser.MEM,
-          find.niceName = 'Nice name default';
+        find.role = RolerUser.MEM;
+        find.isActive = true;
+        find.niceName = 'Nice name default';
         //save
         this.userRepo.save(find);
       });

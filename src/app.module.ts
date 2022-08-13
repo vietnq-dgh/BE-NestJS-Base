@@ -10,10 +10,13 @@ import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
 import { TagNameModule } from './modules/tag-name/tag-name.module';
 import { PostModule } from './modules/post/post.module';
+import { MailModule } from './modules/core/mail/mail.module';
+import { PublicModules } from './common/PublicModules';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(config),
+    PublicModules.PASSPORT_MODULE,
     CommandModule,
     FilesModule,
     AuthModule,
@@ -21,6 +24,7 @@ import { PostModule } from './modules/post/post.module';
     CategoryModule,
     TagNameModule,
     PostModule,
+    MailModule,
   ],
   controllers: [
     AppController,
