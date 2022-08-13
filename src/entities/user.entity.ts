@@ -43,7 +43,7 @@ export class User {
   @Column({ type: "varchar", nullable: true, length: 100 })
   niceName: string;
 
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @DeleteDateColumn()
