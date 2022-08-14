@@ -1,12 +1,11 @@
 import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { RolerUser } from "src/common/Enums";
-import { IsEmail } from "class-validator";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column({ type: "varchar", length: 100 })
   displayName: string;
@@ -15,7 +14,7 @@ export class User {
     type: "varchar",
     length: 100,
   })
-  username: string;
+  userName: string;
 
   @Column({
     type: "varchar",

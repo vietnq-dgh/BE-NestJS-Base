@@ -5,6 +5,7 @@ import { PassportModule } from "@nestjs/passport";
 import { join } from "path";
 import { uuid } from "uuidv4";
 import moment from 'moment';
+import { User } from "src/entities/user.entity";
 
 require("dotenv").config({ path: '.env' });
 
@@ -226,4 +227,14 @@ export class PublicModules {
     var current = moment().utc().valueOf();
     return (current - current % 1000) / 1000;
   };
+
+  static fun_secureUserResponse = (user: User): IUserResponse => {
+    const result: IUserResponse = {
+      id: user.id,
+      email: user.email,
+      fullName: user.displayName,
+      userName: user.userName,
+    }
+    return result;
+  }
 }
