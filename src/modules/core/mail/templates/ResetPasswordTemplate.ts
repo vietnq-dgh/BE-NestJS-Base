@@ -1,11 +1,11 @@
+interface IRecoverAccountTemplate {
+  activeLink?: string,
+}
+
 export class ResetPasswordTemplate {
   static newInstance() { return new ResetPasswordTemplate() }
 
-  public getTemplate(
-    logo: string = '',
-    resetLink: string = 'active link',
-    userName: string = '',
-  ) {
+  public getTemplate(fields: IRecoverAccountTemplate) {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -15,7 +15,7 @@ export class ResetPasswordTemplate {
     </head>
 
     <body>
-      <div>Reset Your Account</div>
+      <div>Reset Your Account Link: ${fields.activeLink}</div>
     </body>
 
     </html>

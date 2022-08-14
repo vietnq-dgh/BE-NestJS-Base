@@ -1,13 +1,11 @@
+interface IActiveAccountTemplate {
+  activeLink?: string,
+}
+
 export class ActiveAccountTemplate {
   static newInstance() { return new ActiveAccountTemplate() }
 
-  public getTemplate(
-    email: string = 'replace@gmail.com',
-    activeLink: string = 'active link',
-    homeLink: string = 'home link',
-    userName: string = 'user-name',
-    logo: string = '',
-  ) {
+  public getTemplate(fields: IActiveAccountTemplate) {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -17,7 +15,7 @@ export class ActiveAccountTemplate {
     </head>
 
     <body>
-      <div>Active Your Account</div>
+      <div>Active Your Account Link: ${fields.activeLink}</div>
     </body>
 
     </html>

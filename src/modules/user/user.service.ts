@@ -3,9 +3,9 @@ import { TaskRes } from 'src/common/Classess';
 import { PublicModules } from 'src/common/PublicModules';
 import { User } from 'src/entities/user.entity';
 import { Connection, Repository } from 'typeorm';
+import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as Dics from 'src/common/MyDictionary.json';
-import { plainToClass } from 'class-transformer';
+import { RecoverAccountPasswordDto } from './dto/recover-pass.dto';
 
 @Injectable()
 export class UserService {
@@ -13,37 +13,117 @@ export class UserService {
 
   constructor(
     private readonly connection: Connection,
+    private readonly authService: AuthService,
   ) {
     this.userRepo = this.connection.getRepository(User);
   }
 
   async create(dto: CreateUserDto) {
     let task: TaskRes = null;
+
+    // basic check email
+    if (!dto.email.includes('@')) {
+      task = PublicModules.fun_makeResError(null, 'Invalid email address');
+      return task;
+    }
+
+    // basic check password
+    if (dto.password.length < 3) {
+      task = PublicModules.fun_makeResError(null, 'Password length > 3');
+      return task;
+    }
+
     // find email
     let find = await this.userRepo.findOne({ where: { email: dto.email } });
     if (find) {
-      task = PublicModules.fun_makeResError(null, Dics.EMAIL_FOUND);
+      task = PublicModules.fun_makeResError(null, `User's Email Found!`);
       return task;
     }
 
-    // user name
-    find = await this.userRepo.findOne({ where: { username: dto.username } });
-    if (find) {
-      task = PublicModules.fun_makeResError(null, Dics.USERNAME_FOUND);
-      return task;
-    }
+    // add new user with isActive = false
+    const newUser = this.userRepo.create();
+    newUser.email = dto.email;
+    newUser.password = dto.password;
+    newUser.displayName = dto.displayName;
+    newUser.userName = dto.displayName;
+    find = await this.userRepo.save(newUser);
+    const userRes = PublicModules.fun_secureUserResponse(find);
 
-    // add new
-    find = plainToClass(User, dto);
-    find = await this.userRepo.save(find);
-    task = PublicModules.fun_makeResCreateSucc(find);
+    // send email link active.
+    this.authService.sendMailActive(userRes);
+
+    task = PublicModules.fun_makeResCreateSucc(userRes);
 
     return task;
   }
 
-  async gets(){
+  async gets() {
     let task: TaskRes = null;
     task = PublicModules.fun_makeResListSucc(await this.userRepo.find());
+
+    return task;
+  }
+
+  async activeAccount(tokenActive: string) {
+    let task: TaskRes = null;
+    task = await this.authService.verifyToken(tokenActive);
+    if (!task.success) return task;
+    const userId = task.result.id;
+    const userFind = await this.userRepo.findOne({ where: { id: userId } });
+    if (!userFind) {
+      task = PublicModules.fun_makeResError(null, 'User not found!');
+      return task;
+    }
+    userFind.isActive = true;
+    await this.userRepo.save(userFind);
+
+    return task;
+  }
+
+  async recoverAccount(email: string) {
+    let task: TaskRes = null;
+
+    if (!email || !email.includes('@')) {
+      task = PublicModules.fun_makeResError(null, 'Invalid Email Address');
+      return task;
+    }
+
+    // find email
+    const find = await this.userRepo.findOne({ where: { email } });
+    if (!find) {
+      task = PublicModules.fun_makeResError(null, 'Email not exists, please register');
+      return task;
+    }
+    const userRes = PublicModules.fun_secureUserResponse(find);
+    if (!find.isActive) {
+      task = PublicModules.fun_makeResError(null, 'User is not active, please check your mail inbox to active account!');
+      this.authService.sendMailActive(userRes);
+      return task;
+    }
+
+    // send mail
+    this.authService.sendMailRecover(userRes);
+    task = PublicModules.fun_makeResCreateSucc(userRes);
+
+    return task;
+  }
+
+  async recoverAccountPassword(dto: RecoverAccountPasswordDto) {
+    let task: TaskRes = null;
+    // check token recover
+    task = await this.authService.verifyToken(dto.tokenRecover);
+    if (!task.success) return task;
+
+    // basic dto check new pass
+    if (!dto.newPassword || dto.newPassword.length < 3) {
+      task = PublicModules.fun_makeResError(null, 'Password length > 3');
+      return task;
+    }
+    // find user;
+    let find = await this.userRepo.findOne({ where: { id: task.result.id } });
+    find.password = dto.newPassword;
+    await find.hashPassword();
+    find = await this.userRepo.save(find);
 
     return task;
   }
