@@ -6,6 +6,7 @@ import { HttpExceptionFilter } from './common/fillters/http-exception.fillter';
 import { ValidationExceptionFilter } from './common/fillters/validation-exception.fillter';
 import * as cookieParser from 'cookie-parser';
 import { PublicModules } from './common/PublicModules';
+import * as loggerMorgan from 'morgan';
 
 const APP_NAME = process.env.APP_NAME;
 
@@ -33,12 +34,13 @@ async function bootstrap() {
   // cors
   var whitelist = process.env.DOMAIN_ALLOW;
   app.enableCors({
-    origin: function (origin, callback) {
+    origin: function (origin: any, callback: Function) {
       if (whitelist.indexOf(origin) !== -1) {
-        console.log("allowed cors for:", origin);
+        console.info("=> Allowed cors for:", origin);
         callback(null, true);
       } else {
-        console.log("blocked cors for:", origin);
+        if (origin)
+          console.error("=> Blocked cors for:", origin);
         callback(null, false);
       }
     },
@@ -48,6 +50,7 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.use(loggerMorgan('dev'));
 
   //Swagger
   const swaggerConfig = new DocumentBuilder()

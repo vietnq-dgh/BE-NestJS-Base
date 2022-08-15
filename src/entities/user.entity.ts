@@ -30,7 +30,7 @@ export class User {
   })
   email: string;
 
-  @Column('enum', { enum: RolerUser , default: RolerUser.MEM },)
+  @Column('enum', { enum: RolerUser, default: RolerUser.MEM },)
   role: RolerUser;
 
   @CreateDateColumn()
@@ -52,4 +52,10 @@ export class User {
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
+
+  @Column({ nullable: true, default: 0 })
+  lastSendMailActive: number;
+
+  @Column({ nullable: true, default: 0 })
+  lastSendMailRecover: number;
 }

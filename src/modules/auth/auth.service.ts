@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/entities/user.entity';
 import { Connection, Repository } from 'typeorm';
 import { JwtPayload } from './dto/JwtPayload';
-import * as Dics from 'src/common/MyDictionary.json';
 import { PublicModules } from 'src/common/PublicModules';
 import { JwtService } from '@nestjs/jwt';
 import { RolerUser } from 'src/common/Enums';
@@ -27,7 +26,21 @@ export class AuthService {
     this.userRepo = this.connection.getRepository(User);
   }
 
-  async sendMailActive(userRes: IUserResponse) {
+  async sendMailActive(user: User) {
+    let task: TaskRes = null;
+    // check lasted send mail active
+    const currentTime = Number(PublicModules.fun_getCurrentTimestampUTC_Moment());
+    const lastSend = user.lastSendMailActive;
+    if (lastSend) {
+      const wait = this.mailService.SEND_MAIL_PER_USER_IN_SECONDS - (currentTime - lastSend);
+      if (wait > 0) {
+        task = PublicModules.fun_makeResError(wait, `Please wait [${wait} Seconds] for next send mail.`);
+        return task;
+      }
+    }
+
+    const userRes = PublicModules.fun_secureUserResponse(user);
+
     const tokenActive = await this.createToken(
       userRes,
       // 10 min
@@ -43,9 +56,28 @@ export class AuthService {
       html,
     });
     this.mailService.sendMail(mailDto);
+    user.lastSendMailActive = currentTime;
+    await this.userRepo.save(user);
+
+    task = PublicModules.fun_makeResCreateSucc(userRes);
+    return task;
   }
 
-  async sendMailRecover(userRes: IUserResponse) {
+  async sendMailRecover(user: User) {
+    let task: TaskRes = null;
+    // check lasted send mail recover
+    const currentTime = Number(PublicModules.fun_getCurrentTimestampUTC_Moment());
+    const lastSend = user.lastSendMailRecover;
+    if (lastSend) {
+      const wait = this.mailService.SEND_MAIL_PER_USER_IN_SECONDS - (currentTime - lastSend);
+      if (wait > 0) {
+        task = PublicModules.fun_makeResError(wait, `Please wait [${wait} Seconds] for next send mail.`);
+        return task;
+      }
+    }
+
+    const userRes = PublicModules.fun_secureUserResponse(user);
+
     const tokenRecover = await this.createToken(
       userRes,
       // 10 min
@@ -61,6 +93,11 @@ export class AuthService {
       html,
     });
     this.mailService.sendMail(mailDto);
+
+    user.lastSendMailRecover = currentTime;
+    user = await this.userRepo.save(user);
+    task = PublicModules.fun_makeResCreateSucc(userRes);
+    return task;
   }
 
   async validateUser(payload: JwtPayload): Promise<User> {
@@ -159,8 +196,7 @@ export class AuthService {
     const userRes = PublicModules.fun_secureUserResponse(find);
     // user active ?
     if (!find.isActive) {
-      task = PublicModules.fun_makeResError(null, 'User is not active | Please check your email inbox to active account');
-      this.sendMailActive(userRes);
+      task = PublicModules.fun_makeResError(null, 'User is not active');
       return task;
     }
     // pass correct ?

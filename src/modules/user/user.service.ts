@@ -35,13 +35,17 @@ export class UserService {
 
     // find email
     let find = await this.userRepo.findOne({ where: { email: dto.email } });
+    let newUser: User = null;
     if (find) {
-      task = PublicModules.fun_makeResError(null, `User's Email Found!`);
-      return task;
+      if (find.isActive) {
+        task = PublicModules.fun_makeResError(null, `User's Email Found!`);
+        return task;
+      }
+      if (!find.isActive) newUser = find;
+      else newUser = this.userRepo.create();
     }
 
-    // add new user with isActive = false
-    const newUser = this.userRepo.create();
+    // add new user;
     newUser.email = dto.email;
     newUser.password = dto.password;
     newUser.displayName = dto.displayName;
@@ -50,7 +54,8 @@ export class UserService {
     const userRes = PublicModules.fun_secureUserResponse(find);
 
     // send email link active.
-    this.authService.sendMailActive(userRes);
+    task = await this.authService.sendMailActive(find);
+    if (!task.success) return task;
 
     task = PublicModules.fun_makeResCreateSucc(userRes);
 
@@ -96,13 +101,13 @@ export class UserService {
     }
     const userRes = PublicModules.fun_secureUserResponse(find);
     if (!find.isActive) {
-      task = PublicModules.fun_makeResError(null, 'User is not active, please check your mail inbox to active account!');
-      this.authService.sendMailActive(userRes);
+      task = PublicModules.fun_makeResError(null, 'User is not active');
       return task;
     }
 
     // send mail
-    this.authService.sendMailRecover(userRes);
+    task = await this.authService.sendMailRecover(find);
+    if (!task.success) return task;
     task = PublicModules.fun_makeResCreateSucc(userRes);
 
     return task;

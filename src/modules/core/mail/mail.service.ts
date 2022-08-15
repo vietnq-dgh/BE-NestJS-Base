@@ -6,11 +6,11 @@ import { MailBasicDto } from './dto/mail-basic.dto';
 
 @Injectable()
 export class MailService {
-  public MAX_OF_DATE = 100;
+  public readonly SEND_MAIL_PER_USER_IN_SECONDS: number = Number.parseInt(process.env.SEND_MAIL_PER_USER_IN_SECONDS);
 
   constructor(
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   async sendMail(dto: MailBasicDto): Promise<TaskRes> {
     let task: TaskRes = null;

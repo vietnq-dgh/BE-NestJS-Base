@@ -4,10 +4,11 @@ import * as Dics from './MyDictionary.json'
 import { PassportModule } from "@nestjs/passport";
 import { join } from "path";
 import { uuid } from "uuidv4";
-import moment from 'moment';
 import { User } from "src/entities/user.entity";
 
 require("dotenv").config({ path: '.env' });
+
+const moment = require('moment');
 
 // Nodejs encryption with CTR
 const crypto = require('crypto');
@@ -235,6 +236,16 @@ export class PublicModules {
       fullName: user.displayName,
       userName: user.userName,
     }
+    return result;
+  }
+
+  static fun_getTokenExpired_NumberMilis = () => {
+    let expString = process.env.TOKEN_REFRESH_EXPIRESIN;
+    const expiredInNumber = Number.parseInt(expString.substring(0, expString.length - 1));
+    const result = {
+      expiredInDate: new Date(Date.now() + expiredInNumber),
+      expiredInNumber,
+    };
     return result;
   }
 }
