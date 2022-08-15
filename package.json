@@ -7,7 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build:origin": "nest build",
+    "build:prod": "cat .env.prod > .env && yarn build:origin && cat .env.dev > .env",
+    "build:server": "cat .env.prod > .env && yarn build:origin",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "yarn && nest start --watch",
@@ -38,6 +40,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "moment": "^2.29.4",
+    "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "nestjs-command": "^2.0.0",
     "nodemailer": "6.6.2",

@@ -27,8 +27,9 @@ export class AuthController {
     // set cookie for client?
     if (result.success) {
       res.cookie('jwt', result.result.gaurd.token, {
+        expires: PublicModules.fun_getTokenExpired_NumberMilis().expiredInDate,
         httpOnly: true,
-        secure: true,
+        secure: process.env.ENV.toLowerCase() === 'prod',
       });
     }
     return result;
