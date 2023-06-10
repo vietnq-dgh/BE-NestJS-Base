@@ -54,12 +54,12 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResCreateErr = (result: any) => {
+  static fun_makeResCreateErr = (message: string) => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.NOT_FOUND;
     task.success = false;
-    task.message = Dics.CREATE_ERR;
-    task.result = result;
+    task.message = message;
+    task.result = message;
     return task;
   }
 
@@ -81,12 +81,12 @@ export class PublicModules {
     return task;
   }
 
-  static fun_makeResNotFound = (error: any, name: string = '') => {
+  static fun_makeResNotFound = (message: string = '') => {
     const task = new TaskRes();
     task.statusCode = HttpStatus.NOT_FOUND;
     task.success = false;
-    task.message = `${name} ${Dics.NOT_FOUND}`;
-    task.error = error;
+    task.message = message;
+    task.error = message;
     return task;
   }
 
@@ -247,5 +247,17 @@ export class PublicModules {
       expiredInNumber,
     };
     return result;
+  }
+
+  static fun_momentDiffDays(unit: number) {
+    let current = moment();
+    if (current.hours() > 0) {
+      current = current.add(1, 'days');
+      current = current.hours(0);
+      current = current.minutes(0);
+      current = current.seconds(0);
+    }
+
+    return current.diff(moment.unix(unit), 'days');
   }
 }

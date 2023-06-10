@@ -1,26 +1,26 @@
 version: '3'
 volumes:
-  DEV_NEST_BASE_BY_VIETSL_DB_BACKUP:
+  DEV_APP_NESTJS_BASE_DB_BACKUP:
 services:
-  DEV_NEST_BASE_BY_VIETSL_SERVICE_DB:
-    container_name: DEV_NEST_BASE_BY_VIETSL_SERVICE_DB_MYSQL
+  DEV_APP_NESTJS_BASE_SERVICE_DB:
+    container_name: DEV_APP_NESTJS_BASE_SERVICE_DB_MYSQL
     image: mysql:8.0.26
     env_file:
       - ../.env
     ports:
       - ${DB_DATABASE_PORT}:3306
     volumes:
-      - DEV_NEST_BASE_BY_VIETSL_DB_BACKUP:/var/lib/mysql
+      - DEV_APP_NESTJS_BASE_DB_BACKUP:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
   adminer:
-    container_name: DEV_NEST_BASE_BY_VIETSL_SERVICE_DB_ADMINER
+    container_name: DEV_APP_NESTJS_BASE_SERVICE_DB_ADMINER
     image: adminer
     depends_on:
-      - DEV_NEST_BASE_BY_VIETSL_SERVICE_DB
+      - DEV_APP_NESTJS_BASE_SERVICE_DB
     env_file:
       - ../.env
     ports:

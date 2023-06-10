@@ -56,8 +56,8 @@ export class PostService {
   async findOne(id: number) {
     let task: TaskRes = null;
     const find = await this.findById(id);
-    if (!find){
-      task = PublicModules.fun_makeResNotFound(null, 'POST');
+    if (!find) {
+      task = PublicModules.fun_makeResNotFound('POST not found');
       return task;
     }
     task = PublicModules.fun_makeResFoundSucc(find);

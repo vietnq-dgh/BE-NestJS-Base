@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { TaskRes } from 'src/common/Classess';
 import { PublicModules } from 'src/common/PublicModules';
 import { User } from 'src/entities/user.entity';
-import { Connection, Repository } from 'typeorm';
+import { Connection, IsNull, Repository } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { RecoverAccountPasswordDto } from './dto/recover-pass.dto';
+import { ChoVayDto } from './dto/chovay.dto';
+import { TatToanDto } from './dto/tattoan.dto';
+import { RolerUser } from 'src/common/Enums';
+import { ChoVayQuery } from './dto/chovay-query.dto';
 
 @Injectable()
 export class UserService {
@@ -64,7 +68,11 @@ export class UserService {
 
   async gets() {
     let task: TaskRes = null;
-    task = PublicModules.fun_makeResListSucc(await this.userRepo.find());
+    task = PublicModules.fun_makeResListSucc(await this.userRepo.find({
+      where: {
+        role: RolerUser.MEM,
+      }
+    }));
 
     return task;
   }

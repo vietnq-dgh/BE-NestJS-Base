@@ -12,6 +12,7 @@ import { TagNameModule } from './modules/tag-name/tag-name.module';
 import { PostModule } from './modules/post/post.module';
 import { MailModule } from './modules/core/mail/mail.module';
 import { PublicModules } from './common/PublicModules';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
   imports: [
@@ -29,6 +30,9 @@ import { PublicModules } from './common/PublicModules';
   controllers: [
     AppController,
   ],
-  providers: [AppService,],
+  providers: [
+    AppService,
+    ChatGateway,
+  ],
 })
 export class AppModule { }
