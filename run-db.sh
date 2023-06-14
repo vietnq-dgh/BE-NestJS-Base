@@ -1,4 +1,4 @@
-#!/bin/bash [run: ./run-db.sh]
+#!/bin/bash
 
 cp_dev="MY_docker-compose.dev.yml"
 cp_prod="MY_docker-compose.prod.yml"
