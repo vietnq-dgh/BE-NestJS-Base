@@ -1,27 +1,40 @@
 version: '3'
 volumes:
-  DEV_APP_NESTJS_BASE_DB_BACKUP:
+  DEV_APP_TEST_PLEASE_REPLACE_ME__DB_BACKUP:
 services:
-  DEV_APP_NESTJS_BASE_SERVICE_DB:
-    container_name: DEV_APP_NESTJS_BASE_SERVICE_DB_MYSQL
+  DEV_APP_TEST_PLEASE_REPLACE_ME__SERVICE_DB:
+    container_name: DEV_APP_TEST_PLEASE_REPLACE_ME__SERVICE_DB_MYSQL
     image: mysql:8.0.26
+    platform: linux/x86_64
     env_file:
       - ../.env
     ports:
       - ${DB_DATABASE_PORT}:3306
     volumes:
-      - DEV_APP_NESTJS_BASE_DB_BACKUP:/var/lib/mysql
+      - DEV_APP_TEST_PLEASE_REPLACE_ME__DB_BACKUP:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
   adminer:
-    container_name: DEV_APP_NESTJS_BASE_SERVICE_DB_ADMINER
+    container_name: DEV_APP_TEST_PLEASE_REPLACE_ME__SERVICE_DB_ADMINER
     image: adminer
+    platform: linux/x86_64
     depends_on:
-      - DEV_APP_NESTJS_BASE_SERVICE_DB
+      - DEV_APP_TEST_PLEASE_REPLACE_ME__SERVICE_DB
     env_file:
       - ../.env
     ports:
       - ${DB_ADMINER_PORT}:8080
+  phpmyadmin:
+    image: phpmyadmin
+    platform: linux/x86_64
+    depends_on:
+      - DEV_APP_TEST_PLEASE_REPLACE_ME__SERVICE_DB
+    env_file:
+      - ../.env
+    ports:
+      - ${DB_PHP_MYADMIN_PORT}:80
+    environment:
+      - PMA_ARBITRARY=1

@@ -45,9 +45,8 @@ export class UserService {
         task = PublicModules.fun_makeResError(null, `User's Email Found!`);
         return task;
       }
-      if (!find.isActive) newUser = find;
-      else newUser = this.userRepo.create();
-    }
+      newUser = find;
+    } else newUser = this.userRepo.create();
 
     // add new user;
     newUser.email = dto.email;
